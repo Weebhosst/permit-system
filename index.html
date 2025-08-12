@@ -10,6 +10,7 @@
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
       <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
       <style>
         :root {
           --brand: #0ea5e9;
@@ -455,6 +456,26 @@
               <button id="resetDbBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-rotate-left mr-2"></i>Reset Database</button>
             </div>
           </div>
+        <div class="card p-5 rounded-xl space-y-3 mt-6">
+          <h3 class="font-semibold">Koneksi Supabase (Sinkronisasi Multi-Perangkat)</h3>
+          <p class="text-sm text-slate-300">Masukkan kredensial Supabase Anda. Data akan tersinkron otomatis antar perangkat.</p>
+          <div class="grid md:grid-cols-2 gap-3">
+            <div>
+              <label class="text-sm text-slate-300">Supabase URL</label>
+              <input id="sb_url" type="url" placeholder="https://xxxx.supabase.co" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            </div>
+            <div>
+              <label class="text-sm text-slate-300">Supabase ANON KEY</label>
+              <input id="sb_key" type="password" placeholder="eyJhbGci..." class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button id="sb_connect" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-plug mr-2"></i>Simpan & Sambungkan</button>
+            <button id="sb_disconnect" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-link-slash mr-2"></i>Putuskan</button>
+            <button id="sb_sync_now" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Sync Sekarang</button>
+          </div>
+          <div id="sb_status" class="text-sm text-slate-400"></div>
+        </div>
         </section>
       </main>
 
@@ -479,6 +500,8 @@
         // Global state
         let SQL = null;
         let db = null;
+        let supabaseClient = null;
+        let supabaseConnected = false;
         let zxingReader = null;
         let currentStream = null;
 
@@ -536,6 +559,90 @@
             permits = [];
             logsData = [];
           }
+        };
+
+        // Supabase helpers
+        const sbSetStatus = (text, tone='info') => {
+          const el = document.getElementById('sb_status');
+          if (!el) return;
+          el.textContent = text || '';
+        };
+        const sbSaveCreds = (url, key) => {
+          localStorage.setItem('sb_url', url);
+          localStorage.setItem('sb_key', key);
+        };
+        const sbLoadCreds = () => ({ url: localStorage.getItem('sb_url') || '', key: localStorage.getItem('sb_key') || '' });
+        const sbConnect = async () => {
+          const url = document.getElementById('sb_url').value.trim();
+          const key = document.getElementById('sb_key').value.trim();
+          if (!url || !key) { sbSetStatus('URL/KEY Supabase belum diisi'); return; }
+          try {
+            supabaseClient = window.supabase.createClient(url, key);
+            // simple ping
+            const { data, error } = await supabaseClient.from('permits').select('count', { count: 'exact', head: true });
+            if (error) throw error;
+            supabaseConnected = true;
+            sbSaveCreds(url, key);
+            sbSetStatus('Terhubung ke Supabase.');
+            notify('Supabase tersambung', 'success');
+          } catch (e) {
+            supabaseConnected = false;
+            sbSetStatus('Gagal terhubung: ' + (e.message || e));
+            notify('Gagal konek Supabase', 'error');
+          }
+        };
+
+        const sbEnsureTables = async () => {
+          // Require SQL migration set in project; we just assume tables exist.
+          // Provide DDL reference in comment:
+          // create table if not exists permits (
+          //   permit_code text primary key,
+          //   plate text,
+          //   owner text,
+          //   type text,
+          //   valid_from date,
+          //   valid_to date,
+          //   stnk_exp date,
+          //   simc_exp date,
+          //   sima_exp date,
+          //   status text,
+          //   notes text,
+          //   inserted_at timestamp with time zone default now()
+          // );
+          // create table if not exists logs (
+          //   id bigserial primary key,
+          //   ts timestamp with time zone default now(),
+          //   event text,
+          //   permit_code text,
+          //   plate text
+          // );
+        };
+
+        const sbPullAll = async () => {
+          if (!supabaseConnected) return;
+          const { data: d1, error: e1 } = await supabaseClient.from('permits').select('*');
+          if (e1) { notify('Gagal sync permits', 'error'); return; }
+          const { data: d2, error: e2 } = await supabaseClient.from('logs').select('*');
+          if (e2) { notify('Gagal sync logs', 'error'); return; }
+          permits = Array.isArray(d1) ? d1 : [];
+          logsData = Array.isArray(d2) ? d2 : [];
+          renderTable(); renderLogs(); renderStats(); renderSelectedInfo();
+        };
+
+        const sbUpsertPermit = async (p) => {
+          if (!supabaseConnected) return;
+          const { error } = await supabaseClient.from('permits').upsert(p, { onConflict: 'permit_code' });
+          if (error) notify('Gagal simpan ke Supabase', 'error');
+        };
+        const sbDeletePermit = async (permit_code) => {
+          if (!supabaseConnected) return;
+          const { error } = await supabaseClient.from('permits').delete().eq('permit_code', permit_code);
+          if (error) notify('Gagal hapus di Supabase', 'error');
+        };
+        const sbInsertLog = async (l) => {
+          if (!supabaseConnected) return;
+          const { error } = await supabaseClient.from('logs').insert(l);
+          if (error) notify('Gagal simpan log', 'error');
         };
 
         // CSV helpers
@@ -641,12 +748,13 @@
                 <button class="px-2 py-1 rounded bg-rose-500/20 border border-rose-400/30 del">Hapus</button>
               </td>`;
             tr.querySelector('.sel').addEventListener('click', () => { selectedPermitCode = p.permit_code; renderSelectedInfo(); notify('Dipilih: ' + (p.permit_code || '')); });
-            tr.querySelector('.del').addEventListener('click', () => {
-              if (!confirm('Hapus permit ini?')) return;
-              permits = permits.filter(x => x !== p);
-              if (selectedPermitCode === p.permit_code) selectedPermitCode = null;
-              persist(); renderStats(); renderTable(); renderSelectedInfo();
-            });
+          tr.querySelector('.del').addEventListener('click', async () => {
+            if (!confirm('Hapus permit ini?')) return;
+            permits = permits.filter(x => x !== p);
+            if (selectedPermitCode === p.permit_code) selectedPermitCode = null;
+            persist(); renderStats(); renderTable(); renderSelectedInfo();
+            await sbDeletePermit(p.permit_code);
+          });
             body.appendChild(tr);
           }
         };
@@ -775,10 +883,12 @@
                 const match = permits.find(p => p.permit_code === text);
                 if (match) {
                   $('#scanMatch').innerHTML = `<div class="text-emerald-300 font-semibold">Ditemukan: ${match.permit_code}</div><div>${match.plate || ''} • ${match.owner || ''}</div>`;
-                  if ($('#autoLogToggle').checked) {
-                    logsData.push({ ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' });
-                    persist(); renderLogs(); renderStats();
-                  }
+                if ($('#autoLogToggle').checked) {
+                  const logObj = { ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' };
+                  logsData.push(logObj);
+                  persist(); renderLogs(); renderStats();
+                  sbInsertLog(logObj);
+                }
                 } else {
                   $('#scanMatch').innerHTML = '<div class="text-rose-300">Tidak cocok data</div>';
                 }
@@ -894,8 +1004,9 @@
             if (permits.some(p => p.permit_code === data.permit_code)) {
               data.permit_code = genCode();
             }
-            permits.push(data);
-            persist();
+          permits.push(data);
+          persist();
+          sbUpsertPermit(data);
             $('#formMsg').textContent = 'Tersimpan.';
             selectedPermitCode = data.permit_code;
             updatePreview(); renderTable(); renderSelectedInfo(); renderStats();
@@ -910,20 +1021,32 @@
             const code = $('#scanCode').textContent.trim();
             if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
             const match = permits.find(p => p.permit_code === code);
-            logsData.push({ ts: nowISO(), event: 'IN', permit_code: code, plate: match?.plate || '' });
-            persist(); renderLogs(); renderStats(); notify('Dicatat IN', 'success');
+          const logObj = { ts: nowISO(), event: 'IN', permit_code: code, plate: match?.plate || '' };
+          logsData.push(logObj);
+          persist(); renderLogs(); renderStats(); notify('Dicatat IN', 'success');
+          sbInsertLog(logObj);
           });
           $('#manualOutBtn').addEventListener('click', () => {
             const code = $('#scanCode').textContent.trim();
             if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
             const match = permits.find(p => p.permit_code === code);
-            logsData.push({ ts: nowISO(), event: 'OUT', permit_code: code, plate: match?.plate || '' });
-            persist(); renderLogs(); renderStats(); notify('Dicatat OUT', 'success');
+          const logObj = { ts: nowISO(), event: 'OUT', permit_code: code, plate: match?.plate || '' };
+          logsData.push(logObj);
+          persist(); renderLogs(); renderStats(); notify('Dicatat OUT', 'success');
+          sbInsertLog(logObj);
           });
 
           // Logs
           $('#searchLogInput').addEventListener('input', debounce(renderLogs, 200));
-          $('#clearLogsBtn').addEventListener('click', () => { if (confirm('Hapus semua log?')) { logsData = []; persist(); renderLogs(); renderStats(); }});
+          $('#clearLogsBtn').addEventListener('click', async () => { 
+            if (confirm('Hapus semua log?')) { 
+              logsData = []; persist(); renderLogs(); renderStats();
+              if (supabaseConnected) {
+                const { error } = await supabaseClient.from('logs').delete().neq('id', -1);
+                if (error) notify('Gagal bersihkan log di Supabase', 'error');
+              }
+            }
+          });
 
           // Import from URL
           $('#loadCsvBtn').addEventListener('click', async () => {
@@ -968,6 +1091,9 @@
                 permits.push(obj); count++;
               }
               persist(); renderTable(); renderStats();
+              if (supabaseConnected && count) {
+                for (const p of permits.slice(-count)) await sbUpsertPermit(p);
+              }
               $('#csvMsg').textContent = `Sukses impor ${count} baris. Lewati duplikat: ${skip}.`;
               notify('Impor selesai', 'success');
             } catch (e) {
@@ -1015,6 +1141,9 @@
               permits.push(obj); count++;
             }
             persist(); renderTable(); renderStats();
+            if (supabaseConnected && count) {
+              for (const p of permits.slice(-count)) await sbUpsertPermit(p);
+            }
             notify(`Impor lokal: ${count} baris (skip ${skip})`, 'success');
           });
 
@@ -1038,11 +1167,33 @@
             ];
             permits.push(...sample);
             persist(); renderTable(); renderStats(); notify('Contoh data ditambahkan', 'success');
+            if (supabaseConnected) sample.forEach(sbUpsertPermit);
           });
-          $('#resetDbBtn').addEventListener('click', () => {
+          $('#resetDbBtn').addEventListener('click', async () => {
             if (!confirm('Reset semua data?')) return;
             permits = []; logsData = []; persist(); renderTable(); renderLogs(); renderStats(); selectedPermitCode = null; renderSelectedInfo();
+            if (supabaseConnected) {
+              await supabaseClient.from('permits').delete().neq('permit_code','');
+              await supabaseClient.from('logs').delete().neq('id', -1);
+            }
           });
+
+          // Supabase controls
+          const creds = sbLoadCreds();
+          if (document.getElementById('sb_url')) {
+            document.getElementById('sb_url').value = creds.url;
+            document.getElementById('sb_key').value = creds.key;
+            if (creds.url && creds.key) sbConnect().then(sbPullAll);
+          }
+          document.getElementById('sb_connect')?.addEventListener('click', async () => {
+            await sbConnect();
+            await sbEnsureTables();
+            await sbPullAll();
+          });
+          document.getElementById('sb_disconnect')?.addEventListener('click', () => {
+            supabaseClient = null; supabaseConnected = false; sbSetStatus('Terputus dari Supabase');
+          });
+          document.getElementById('sb_sync_now')?.addEventListener('click', sbPullAll);
         };
 
         // Init
