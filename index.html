@@ -410,8 +410,10 @@
               <h3 class="font-semibold">Hasil Scan</h3>
               <div class="text-sm text-slate-300">Kode Terbaca:</div>
               <div id="scanCode" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900/50 font-mono">-</div>
-              <div class="text-sm text-slate-300">Cocok Dengan:</div>
-              <div id="scanMatch" class="rounded-lg border border-slate-700 bg-slate-900/50 p-3 text-sm">Belum ada.</div>
+              <div class="text-sm text-slate-300">Detail:</div>
+              <div id="scanMatch">
+                <div class="rounded-lg border border-slate-700 bg-slate-900/50 p-3 text-sm">Belum ada.</div>
+              </div>
               <div class="flex gap-2">
                 <button id="manualInBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-door-open mr-2"></i>Catat IN</button>
                 <button id="manualOutBtn" class="px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30 w-full"><i class="fa-solid fa-door-closed mr-2"></i>Catat OUT</button>
@@ -986,7 +988,31 @@
                 $('#scanCode').textContent = text;
                 const match = permits.find(p => p.permit_code === text);
                 if (match) {
-                  $('#scanMatch').innerHTML = `<div class="text-emerald-300 font-semibold">Ditemukan: ${match.permit_code}</div><div>${match.plate || ''} • ${match.owner || ''}</div>`;
+                  $('#scanMatch').innerHTML = `
+                    <div class="print-card bg-white text-slate-900" style="zoom:.9">
+                      <div class="flex items-center justify-between">
+                        <div class="text-xs">
+                          <div class="font-semibold">PERMIT KENDARAAN</div>
+                          <div class="text-slate-500">Akses Area Terbatas</div>
+                        </div>
+                        <div class="text-[10px] text-slate-500">Validasi</div>
+                      </div>
+                      <div class="hline"></div>
+                      <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
+                        <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
+                        <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
+                        <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
+                        <div class="col-span-2 grid grid-cols-3 gap-2">
+                          <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
+                          <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
+                          <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
+                        </div>
+                      </div>
+                      <div class="hline"></div>
+                      <div class="flex items-center justify-center"><svg id="scan_barcode_preview"></svg></div>
+                    </div>`;
+                  try { JsBarcode(document.getElementById('scan_barcode_preview'), match.permit_code, { format: 'CODE128', displayValue: true, fontSize: 10, height: 50, margin: 4 }); } catch(_) {}
                 if ($('#autoLogToggle').checked) {
                   const logObj = { ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' };
                   logsData.push(logObj);
@@ -994,7 +1020,7 @@
                   sbInsertLog(logObj);
                 }
                 } else {
-                  $('#scanMatch').innerHTML = '<div class="text-rose-300">Tidak cocok data</div>';
+                  $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
                 }
               } else if (err && !(err instanceof ZXing.NotFoundException)) {
                 // Sorot error selain tidak ditemukan agar user tahu ada kendala
