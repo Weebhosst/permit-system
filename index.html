@@ -374,7 +374,7 @@
                 </label>
               </div>
               <div class="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-900/50">
-                <video id="video" class="w-full h-[360px] bg-black object-cover"></video>
+                <video id="video" class="w-full h-[360px] bg-black object-cover" playsinline muted autoplay></video>
                 <div class="scanner-frame"></div>
               </div>
               <div id="scanMsg" class="mt-3 text-sm text-slate-300">Izinkan akses kamera untuk memulai pemindaian.</div>
@@ -724,11 +724,17 @@
         // Camera & scanning
         const populateCameras = async () => {
           try {
+            // Ensure permission prompt to reveal device labels on iOS/Safari
+            try {
+              await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            } catch(_) {}
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videos = devices.filter(d => d.kind === 'videoinput');
             const sel = $('#cameraSelect');
             sel.innerHTML = '';
-            for (const d of videos) {
+            // Prefer back camera first
+            const sorted = videos.slice().sort((a,b) => (/(back|rear)/i.test(b.label) ? 1 : 0) - (/(back|rear)/i.test(a.label) ? 1 : 0));
+            for (const d of sorted) {
               const opt = document.createElement('option');
               opt.value = d.deviceId;
               opt.textContent = d.label || `Camera ${sel.length + 1}`;
@@ -744,8 +750,25 @@
           try {
             $('#scanMsg').textContent = 'Memulai kamera...';
             if (!zxingReader) zxingReader = new ZXing.BrowserMultiFormatReader();
-            const deviceId = $('#cameraSelect').value || undefined;
-            await zxingReader.decodeFromVideoDevice(deviceId, 'video', (result, err) => {
+            // Select CODE_128 with TRY_HARDER
+            const hints = new Map();
+            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128]);
+            hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+            zxingReader.defaultOptions = { hints };
+
+            const selId = $('#cameraSelect').value || undefined;
+            // Prefer facingMode environment when possible
+            const constraints = selId ? { video: { deviceId: { exact: selId } } } : { video: { facingMode: 'environment' } };
+            try {
+              const stream = await navigator.mediaDevices.getUserMedia(constraints);
+              const video = document.getElementById('video');
+              video.srcObject = stream;
+              await video.play();
+            } catch (_) {
+              // ignore; fallback to ZXing binding
+            }
+
+            await zxingReader.decodeFromVideoDevice(selId, 'video', (result, err) => {
               if (result) {
                 const text = result.getText();
                 $('#scanCode').textContent = text;
@@ -823,7 +846,7 @@
             renderBarcodeTo('#barcodeSvg', txt);
           });
           $('#downloadBarcodeBtn').addEventListener('click', () => downloadSVG('#barcodeSvg', 'barcode.svg'));
-          $('#printCardBtn').addEventListener('click', () => {
+        $('#printCardBtn').addEventListener('click', () => {
             const code = $('#barcodeText').value.trim();
             if (!code) return notify('Tidak ada kode untuk dicetak', 'error');
             const card = document.createElement('div');
@@ -834,10 +857,14 @@
                 <div class="text-[10px] text-slate-500">Validasi</div>
               </div>
               <div class="hline"></div>
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <div><div class="text-slate-500">Kode</div><div class="font-semibold">${code}</div></div>
-                <div><div class="text-slate-500">Tanggal</div><div class="font-semibold">${todayStr()}</div></div>
-                <div class="col-span-2"><div class="text-slate-500">Info</div><div class="font-semibold">Dicetak dari sistem</div></div>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div><div class="text-slate-500">Kode</div><div class="font-semibold">${code}</div></div>
+              <div><div class="text-slate-500">Tanggal</div><div class="font-semibold">${todayStr()}</div></div>
+              <div class="col-span-2 grid grid-cols-3 gap-2">
+                <div><div class="text-slate-500">STNK</div><div class="font-semibold">${$('#f_stnk')?.value || '-'}</div></div>
+                <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${$('#f_simc')?.value || '-'}</div></div>
+                <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${$('#f_sima')?.value || '-'}</div></div>
+              </div>
               </div>
               <div class="hline"></div>
               <div class="flex items-center justify-center"><svg id="tmp_bar"></svg></div>`;
