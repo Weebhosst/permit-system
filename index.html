@@ -243,7 +243,7 @@
                 <button id="generateBarcodeBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-barcode mr-2"></i>Generate</button>
               </div>
               <div class="rounded-lg border border-slate-700 p-4 bg-slate-900/40 overflow-auto">
-                <svg id="barcodeSvg"></svg>
+                <svg id="barcodeSvg" class="mx-auto"></svg>
               </div>
               <div class="mt-3 flex gap-2">
                 <button id="printCardBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-print mr-2"></i>Cetak Kartu</button>
@@ -470,7 +470,7 @@
             </div>
             <div>
               <label class="text-sm text-slate-300">Email Admin</label>
-              <input id="sb_email" type="email" placeholder="admin@email.com" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              <input id="sb_email" type="email" placeholder="afriadmin@email.com" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
             </div>
             <div>
               <label class="text-sm text-slate-300">Password</label>
@@ -515,6 +515,7 @@
         let isAdmin = false;
         let zxingReader = null;
         let currentStream = null;
+        let preferredDeviceId = null;
 
         const $ = (sel) => document.querySelector(sel);
         const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -833,12 +834,24 @@
         };
 
         // Barcode utilities
-        const renderBarcodeTo = (selector, text) => {
+      const renderBarcodeTo = (selector, text) => {
           const svg = $(selector);
           svg.innerHTML = '';
           if (!text) return;
           try {
-            JsBarcode(svg, text, { format: 'CODE128', displayValue: true, fontSize: 14, height: 60, margin: 6 });
+          // Set high-contrast background for better scanning
+          svg.setAttribute('style', 'background:#ffffff');
+          JsBarcode(svg, text, { 
+            format: 'CODE128',
+            displayValue: true,
+            fontSize: 16,
+            lineColor: '#000000',
+            background: '#ffffff',
+            width: 3,
+            height: 100,
+            margin: 8,
+            textMargin: 6
+          });
           } catch (e) {
             notify('Gagal generate barcode', 'error');
           }
@@ -894,14 +907,11 @@
             const videos = devices.filter(d => d.kind === 'videoinput');
             const sel = $('#cameraSelect');
             sel.innerHTML = '';
-            // Prefer back camera first
-            const sorted = videos.slice().sort((a,b) => (/(back|rear)/i.test(b.label) ? 1 : 0) - (/(back|rear)/i.test(a.label) ? 1 : 0));
-            for (const d of sorted) {
-              const opt = document.createElement('option');
-              opt.value = d.deviceId;
-              opt.textContent = d.label || `Camera ${sel.length + 1}`;
-              sel.appendChild(opt);
-            }
+            // Find back camera by label
+            const sorted = videos.slice().sort((a,b) => (/(back|rear|environment)/i.test(b.label) ? 1 : 0) - (/(back|rear|environment)/i.test(a.label) ? 1 : 0));
+            preferredDeviceId = sorted[0]?.deviceId || videos[0]?.deviceId || null;
+            // Hide selector to enforce back-camera only
+            sel.classList.add('hidden');
             if (!videos.length) $('#scanMsg').textContent = 'Kamera tidak ditemukan.';
           } catch (e) {
             $('#scanMsg').textContent = 'Tidak bisa mengakses daftar perangkat kamera.';
@@ -916,16 +926,30 @@
             const hints = new Map();
             hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128]);
             hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-            zxingReader.defaultOptions = { hints };
+            hints.set(ZXing.DecodeHintType.CHARACTER_SET, 'utf-8');
+            zxingReader.defaultOptions = { hints, delayBetweenScanAttempts: 50, delayBetweenScanSuccess: 500 };
 
-            const selId = $('#cameraSelect').value || undefined;
-            // Prefer facingMode environment when possible
-            const constraints = selId ? { video: { deviceId: { exact: selId } } } : { video: { facingMode: 'environment' } };
+            // Stop previous stream if any
+            try { if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; } } catch(_) {}
+
+            const selId = preferredDeviceId || undefined;
+            // Enforce back camera only
+            const constraints = selId ? { video: { deviceId: { exact: selId } } } : { video: { facingMode: { exact: 'environment' } } };
             try {
-              const stream = await navigator.mediaDevices.getUserMedia(constraints);
+              const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                  ...(constraints.video || {}),
+                  focusMode: 'continuous',
+                  advanced: [
+                    { torch: false },
+                    { zoom: 2 }
+                  ]
+                }
+              });
               const video = document.getElementById('video');
               video.srcObject = stream;
               await video.play();
+              currentStream = stream;
             } catch (_) {
               // ignore; fallback to ZXing binding
             }
@@ -946,6 +970,9 @@
                 } else {
                   $('#scanMatch').innerHTML = '<div class="text-rose-300">Tidak cocok data</div>';
                 }
+              } else if (err && !(err instanceof ZXing.NotFoundException)) {
+                // Sorot error selain tidak ditemukan agar user tahu ada kendala
+                $('#scanMsg').textContent = 'Kesulitan membaca. Coba dekatkan, atur fokus, atau perbesar barcode.';
               }
             });
             $('#scanMsg').textContent = 'Pemindaian aktif.';
@@ -953,10 +980,16 @@
             $('#scanMsg').textContent = 'Gagal memulai pemindaian.';
           }
         };
-        const stopScan = () => {
+      const stopScan = () => {
           try {
             if (zxingReader) zxingReader.reset();
             $('#scanMsg').textContent = 'Pemindaian dihentikan.';
+          const video = document.getElementById('video');
+          if (video && video.srcObject) {
+            try { video.srcObject.getTracks().forEach(t => t.stop()); } catch(_) {}
+            video.srcObject = null;
+          }
+          if (currentStream) { try { currentStream.getTracks().forEach(t => t.stop()); } catch(_) {} currentStream = null; }
           } catch (e) {
             // ignore
           }
