@@ -251,6 +251,32 @@
               </div>
             </div>
           </div>
+
+        <div class="card p-5 rounded-xl mt-6">
+          <h3 class="font-semibold mb-3">Generate Barcode Batang (Massal)</h3>
+          <div class="grid md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+              <label class="text-sm text-slate-300">Daftar Kode (satu per baris)</label>
+              <textarea id="bulkCodes" rows="6" placeholder="PRM-2025-0001\nPRM-2025-0002\nPRM-2025-0003" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"></textarea>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <label class="text-sm text-slate-300">Lebar Garis</label>
+                <input id="bulkWidth" type="number" min="1" max="6" value="3" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">Tinggi</label>
+                <input id="bulkHeight" type="number" min="40" max="200" value="100" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div class="flex gap-2 pt-1">
+                <button id="bulkGenerateBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-bars mr-2"></i>Generate</button>
+                <button id="bulkClearBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 w-full"><i class="fa-solid fa-eraser mr-2"></i>Clear</button>
+              </div>
+              <button id="bulkPrintBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 w-full"><i class="fa-solid fa-print mr-2"></i>Print Sheet</button>
+            </div>
+          </div>
+          <div id="bulkContainer" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
         </section>
 
         <section id="new" class="tab-section hidden fade-in">
@@ -1301,6 +1327,44 @@
           renderSelectedInfo();
           updatePreview();
           await populateCameras();
+        });
+
+        // Bulk barcodes
+        const bulkRenderOne = (container, code, width, height) => {
+          const card = document.createElement('div');
+          card.className = 'rounded-lg border border-slate-700 bg-white p-3';
+          card.innerHTML = `
+            <div class="text-xs text-slate-600 mb-1">${code}</div>
+            <div class="flex items-center justify-center"><svg></svg></div>
+          `;
+          const svg = card.querySelector('svg');
+          try {
+            JsBarcode(svg, code, { format: 'CODE128', background: '#ffffff', lineColor: '#000', width, height, displayValue: true, fontSize: 14, margin: 6 });
+          } catch (_) {}
+          container.appendChild(card);
+        };
+
+        const bulkGenerate = () => {
+          const codes = (document.getElementById('bulkCodes').value || '')
+            .split(/\r?\n/)
+            .map(s => s.trim())
+            .filter(Boolean);
+          const width = Math.max(1, Math.min(6, Number(document.getElementById('bulkWidth').value || 3)));
+          const height = Math.max(40, Math.min(200, Number(document.getElementById('bulkHeight').value || 100)));
+          const wrap = document.getElementById('bulkContainer');
+          wrap.innerHTML = '';
+          if (!codes.length) { notify('Isi daftar kode terlebih dahulu', 'error'); return; }
+          codes.forEach(code => bulkRenderOne(wrap, code, width, height));
+        };
+
+        document.getElementById('bulkGenerateBtn')?.addEventListener('click', bulkGenerate);
+        document.getElementById('bulkClearBtn')?.addEventListener('click', () => { document.getElementById('bulkContainer').innerHTML = ''; });
+        document.getElementById('bulkPrintBtn')?.addEventListener('click', () => {
+          const area = document.getElementById('print-area');
+          area.classList.remove('hidden');
+          area.innerHTML = '<div class="p-4 grid grid-cols-2 gap-4">' + document.getElementById('bulkContainer').innerHTML + '</div>';
+          window.print();
+          setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
         });
 
         
