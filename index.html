@@ -2,7 +2,13 @@
   <html lang="id">
     <head>
       <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+      <meta name="theme-color" content="#0ea5e9">
+      <meta name="apple-mobile-web-app-capable" content="yes">
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+      <meta name="apple-mobile-web-app-title" content="Permit System">
+      <link rel="manifest" href="manifest.json">
+      <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHT0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjMGVhNWU5Ii8+CjxwYXRoIGQ9Ik00OCA5NkM0OCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMxNDQgMTIyLjUxIDEyMi41MSAxNDQgOTYgMTQ0SDY2QzQwLjQ2IDE0NCAxNiAxMjMuNTQgMTYgOThWOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNODAgMTEyQzcwLjgzNiAxMTIgNjcgMTA2LjE2NCA2NyA5OUM2NyA5MS44MzYgNzIuODM2IDg3IDgwIDg3Qzg3LjE2NCA4NyA5MyA5MS44MzYgOTMgOTlDOTMgMTA2LjE2NCA4Ny4xNjQgMTEyIDgwIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTEgODcgMTE1IDkxLjgzNiAxMTUgOTlDMTE1IDEwNi4xNjQgMTExLjE2NCAxMTIgMTEyIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==">
       <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
       <meta name="description" content="Aplikasi web untuk manajemen permit data kendaraan dengan barcode, scanner otomatis, impor dari Google Spreadsheet (CSV), dan database SQL (SQLite di browser).">
       <script src="https://cdn.tailwindcss.com"></script>
@@ -93,10 +99,79 @@
           #print-area, #print-area * { visibility: visible; }
           #print-area { position: absolute; inset: 0; background: white; padding: 16px; }
         }
+        
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+          .grid-auto-fit {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+          }
+          
+          .card {
+            border-radius: 12px;
+            margin: 0.5rem;
+          }
+          
+          table td, table th {
+            padding: 0.5rem 0.6rem;
+            font-size: 0.875rem;
+          }
+          
+          .print-card {
+            width: 100%;
+            height: auto;
+            min-height: 200px;
+          }
+          
+          /* Touch-friendly buttons */
+          button, .btn {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 0.75rem 1rem;
+          }
+          
+          /* Mobile navigation */
+          .tab-nav {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          
+          .tab-nav button {
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+        }
+        
+        /* PWA specific styles */
+        @media (display-mode: standalone) {
+          body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+          }
+          
+          header {
+            padding-top: calc(1rem + env(safe-area-inset-top));
+          }
+        }
+        
+        /* Touch feedback */
+        .touch-feedback {
+          transition: transform 0.1s ease;
+        }
+        
+        .touch-feedback:active {
+          transform: scale(0.95);
+        }
+        
+        /* Swipe gestures */
+        .swipe-container {
+          touch-action: pan-y;
+          overflow-x: hidden;
+        }
       </style>
     </head>
-    <body class="antialiased">
-      <header class="sticky top-0 z-30 glass">
+          <body class="antialiased swipe-container">
+        <header class="sticky top-0 z-30 glass">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="h-10 w-10 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300">
@@ -112,14 +187,14 @@
             <button id="exportDbBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sky-50"><i class="fa-solid fa-download mr-2"></i>Unduh Database</button>
           </div>
         </div>
-        <nav class="max-w-7xl mx-auto px-4 pb-4">
+        <nav class="max-w-7xl mx-auto px-4 pb-4 tab-nav">
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="dashboard"><i class="fa-solid fa-gauge-high mr-2"></i>Dashboard</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="data"><i class="fa-solid fa-table mr-2"></i>Data</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="new"><i class="fa-solid fa-square-plus mr-2"></i>Tambah Permit</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="scan"><i class="fa-solid fa-barcode mr-2"></i>Scan Barcode</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="logs"><i class="fa-solid fa-clipboard-list mr-2"></i>Log</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl" data-tab="import"><i class="fa-solid fa-file-import mr-2"></i>Impor/Ekspor</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="dashboard"><i class="fa-solid fa-gauge-high mr-2"></i>Dashboard</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="data"><i class="fa-solid fa-table mr-2"></i>Data</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="new"><i class="fa-solid fa-square-plus mr-2"></i>Tambah Permit</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="scan"><i class="fa-solid fa-barcode mr-2"></i>Scan Barcode</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="logs"><i class="fa-solid fa-clipboard-list mr-2"></i>Log</button>
+            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="import"><i class="fa-solid fa-file-import mr-2"></i>Impor/Ekspor</button>
           </div>
         </nav>
       </header>
@@ -520,7 +595,7 @@
       <section id="print-area" class="hidden"></section>
 
       <footer class="max-w-7xl mx-auto px-4 py-10 text-center text-slate-500 text-sm">
-        Dibangun full di browser menggunakan HTML, CSS, dan JavaScript. Barcode oleh JsBarcode, pemindaian oleh ZXing, dan database SQLite via sql.js.
+        Created By : Yanuar Afri 
       </footer>
 
       <script>
@@ -574,6 +649,31 @@
           wrap.innerHTML = `<div class="px-3 py-2 rounded-lg border ${color}">${message}</div>`;
           document.body.appendChild(wrap);
           setTimeout(() => wrap.remove(), 2200);
+        };
+
+        // Audio feedback
+        let audioCtx = null;
+        const ensureAudio = async () => {
+          try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
+          } catch (_) {}
+        };
+        const playBeep = async (frequency = 1000, duration = 0.12) => {
+          await ensureAudio();
+          if (!audioCtx) return;
+          const t = audioCtx.currentTime;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(frequency, t);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+          osc.start(t);
+          osc.stop(t + duration);
         };
 
         // Persistence
@@ -1013,6 +1113,8 @@
                       <div class="flex items-center justify-center"><svg id="scan_barcode_preview"></svg></div>
                     </div>`;
                   try { JsBarcode(document.getElementById('scan_barcode_preview'), match.permit_code, { format: 'CODE128', displayValue: true, fontSize: 10, height: 50, margin: 4 }); } catch(_) {}
+                  // Beep on successful read
+                  playBeep(1200, 0.1);
                 if ($('#autoLogToggle').checked) {
                   const logObj = { ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' };
                   logsData.push(logObj);
@@ -1165,6 +1267,7 @@
           logsData.push(logObj);
           persist(); renderLogs(); renderStats(); notify('Dicatat IN', 'success');
           sbInsertLog(logObj);
+          playBeep(1000, 0.08);
           });
           $('#manualOutBtn').addEventListener('click', () => {
             const code = $('#scanCode').textContent.trim();
@@ -1174,6 +1277,7 @@
           logsData.push(logObj);
           persist(); renderLogs(); renderStats(); notify('Dicatat OUT', 'success');
           sbInsertLog(logObj);
+          playBeep(800, 0.08);
           });
 
           // Logs
@@ -1342,6 +1446,94 @@
           document.getElementById('sb_sync_now')?.addEventListener('click', sbPullAll);
         };
 
+        // PWA Registration
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+              .then(registration => {
+                console.log('SW registered: ', registration);
+              })
+              .catch(registrationError => {
+                console.log('SW registration failed: ', registrationError);
+              });
+          });
+        }
+        
+        // Install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          showInstallPrompt();
+        });
+        
+        function showInstallPrompt() {
+          const installBtn = document.createElement('button');
+          installBtn.innerHTML = '📱 Install App';
+          installBtn.className = 'fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg touch-feedback';
+          installBtn.onclick = () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+              }
+              deferredPrompt = null;
+              installBtn.remove();
+            });
+          };
+          document.body.appendChild(installBtn);
+        }
+        
+        // Mobile-specific features
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        function setupMobileGestures() {
+          const container = document.querySelector('.swipe-container') || document.body;
+          
+          container.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+          });
+          
+          container.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            // Swipe left/right for tab navigation
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+              const tabs = Array.from(document.querySelectorAll('.tab-nav button'));
+              const activeTab = tabs.findIndex(tab => tab.classList.contains('tab-active'));
+              
+              if (diffX > 0 && activeTab < tabs.length - 1) {
+                // Swipe left - next tab
+                tabs[activeTab + 1].click();
+              } else if (diffX < 0 && activeTab > 0) {
+                // Swipe right - previous tab
+                tabs[activeTab - 1].click();
+              }
+            }
+          });
+        }
+        
+        // Offline detection
+        function setupOfflineDetection() {
+          window.addEventListener('online', () => {
+            notify('Koneksi internet tersedia', 'success');
+            // Sync offline data
+            if (supabaseConnected) {
+              sbPullAll();
+            }
+          });
+          
+          window.addEventListener('offline', () => {
+            notify('Tidak ada koneksi internet - mode offline aktif', 'warning');
+          });
+        }
+        
         // Init
         window.addEventListener('DOMContentLoaded', async () => {
           loadPersisted();
@@ -1353,6 +1545,8 @@
           renderSelectedInfo();
           updatePreview();
           await populateCameras();
+          setupMobileGestures();
+          setupOfflineDetection();
         });
 
         // Bulk barcodes
