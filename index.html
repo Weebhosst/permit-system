@@ -464,6 +464,64 @@
         </section>
 
         <section id="scan" class="tab-section hidden fade-in">
+          <!-- Hardware Scanner Section -->
+          <div class="card p-5 rounded-xl space-y-4 mb-6">
+            <h3 class="font-semibold text-sky-300">
+              <i class="fa-solid fa-barcode mr-2"></i>Hardware Barcode Scanner
+            </h3>
+            <p class="text-slate-300">Gunakan USB/Bluetooth barcode scanner untuk scan yang lebih cepat dan akurat.</p>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="text-sm text-slate-300 mb-2 block">Input Hardware Scanner:</label>
+                <div class="relative">
+                  <input 
+                    id="hardwareScannerInput" 
+                    type="text" 
+                    placeholder="Scan barcode dengan hardware scanner..." 
+                    class="w-full px-4 py-4 rounded-lg bg-slate-800/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50 text-lg font-mono touch-feedback"
+                    autocomplete="off"
+                    autofocus
+                  >
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                    <i class="fa-solid fa-barcode text-slate-400 text-xl"></i>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">
+                  <i class="fa-solid fa-info-circle mr-1"></i>
+                  Hubungkan USB/Bluetooth scanner ke komputer, lalu scan barcode. 
+                  Scanner akan otomatis focus ke input ini.
+                </p>
+              </div>
+              <div>
+                <label class="text-sm text-slate-300 mb-2 block">Status Scanner:</label>
+                <div class="flex items-center gap-2 mb-3">
+                  <div id="scannerStatus" class="w-3 h-3 rounded-full bg-slate-500 animate-pulse"></div>
+                  <span id="scannerStatusText" class="text-sm text-slate-400">Tidak terdeteksi</span>
+                </div>
+                <div class="space-y-2">
+                  <button id="testScannerBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sm touch-feedback w-full">
+                    <i class="fa-solid fa-vial mr-2"></i>Test Scanner
+                  </button>
+                  <button id="clearScannerBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 text-sm touch-feedback w-full">
+                    <i class="fa-solid fa-eraser mr-2"></i>Clear Input
+                  </button>
+                </div>
+                <div class="mt-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700">
+                  <h4 class="text-sm font-medium text-slate-300 mb-2">Cara Setup:</h4>
+                  <ol class="text-xs text-slate-400 space-y-1 list-decimal list-inside">
+                    <li>Hubungkan scanner via USB/Bluetooth</li>
+                    <li>Scanner otomatis terdeteksi sebagai keyboard</li>
+                    <li>Klik input field di atas</li>
+                    <li>Scan barcode - data langsung masuk</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="hline mb-6"></div>
+          
           <div class="grid md:grid-cols-3 gap-6">
             <div class="md:col-span-2 card p-4 rounded-xl">
               <div class="flex flex-wrap items-center gap-3 mb-3">
@@ -1519,6 +1577,151 @@
           });
         }
         
+        // Hardware Scanner Detection & Handling
+        let scannerInput = null;
+        let scannerTimeout = null;
+        
+        function setupHardwareScanner() {
+          scannerInput = document.getElementById('hardwareScannerInput');
+          if (!scannerInput) return;
+          
+          // Auto-focus scanner input when scan tab is opened
+          document.querySelector('[data-tab="scan"]').addEventListener('click', () => {
+            setTimeout(() => {
+              if (scannerInput) scannerInput.focus();
+            }, 100);
+          });
+          
+          // Handle scanner input
+          scannerInput.addEventListener('input', (e) => {
+            const value = e.target.value.trim();
+            if (value && value.length > 3) {
+              // Simulate barcode scan
+              handleBarcodeScan(value);
+              
+              // Clear input after processing
+              setTimeout(() => {
+                scannerInput.value = '';
+                scannerInput.focus();
+              }, 100);
+            }
+          });
+          
+          // Handle scanner input with Enter key (some scanners send Enter)
+          scannerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              const value = scannerInput.value.trim();
+              if (value) {
+                handleBarcodeScan(value);
+                scannerInput.value = '';
+                scannerInput.focus();
+              }
+            }
+          });
+          
+          // Test scanner button
+          document.getElementById('testScannerBtn')?.addEventListener('click', () => {
+            testHardwareScanner();
+          });
+          
+          // Clear scanner button
+          document.getElementById('clearScannerBtn')?.addEventListener('click', () => {
+            scannerInput.value = '';
+            scannerInput.focus();
+            notify('Input scanner dibersihkan', 'info');
+          });
+          
+          // Update scanner status
+          updateScannerStatus();
+        }
+        
+        function handleBarcodeScan(barcodeData) {
+          // Update scan code display
+          $('#scanCode').textContent = barcodeData;
+          
+          // Find matching permit
+          const match = permits.find(p => p.permit_code === barcodeData);
+          
+          if (match) {
+            // Show permit details
+            const cardHtml = `
+              <div class="print-card !w-auto !h-auto !p-2 !gap-1 !text-[8px] !rounded-md !border-emerald-400/30 !bg-emerald-500/10">
+                <div class="flex items-center justify-between">
+                  <div class="font-semibold">PERMIT KENDARAAN</div>
+                  <div class="text-[7px] text-slate-500">Hardware Scan</div>
+                </div>
+                <div class="hline !my-0"></div>
+                <div class="grid grid-cols-2 gap-1">
+                  <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
+                  <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
+                  <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
+                  <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
+                  <div class="col-span-2 grid grid-cols-3 gap-1">
+                    <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
+                    <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
+                    <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
+                  </div>
+                </div>
+                <div class="hline !my-0"></div>
+                <div class="flex items-center justify-center"><svg id="hardware_scan_barcode"></svg></div>
+              </div>`;
+            
+            $('#scanMatch').innerHTML = cardHtml;
+            renderBarcodeTo('#hardware_scan_barcode', match.permit_code || match.plate || '');
+            
+            // Play success sound
+            playBeep(1200, 0.1);
+            
+            // Auto-log if enabled
+            if (document.getElementById('autoLogToggle')?.checked) {
+              addLog('SCAN', match.permit_code, match.plate, 'Hardware Scanner');
+            }
+            
+            notify(`Barcode berhasil di-scan: ${match.permit_code}`, 'success');
+          } else {
+            // No match found
+            $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
+            playBeep(800, 0.2); // Error sound
+            notify(`Barcode tidak ditemukan: ${barcodeData}`, 'error');
+          }
+        }
+        
+        function testHardwareScanner() {
+          const testBarcode = 'TEST123456';
+          scannerInput.value = testBarcode;
+          notify('Test scanner: masukkan kode manual atau scan barcode', 'info');
+          
+          // Simulate scan after 2 seconds
+          setTimeout(() => {
+            if (scannerInput.value === testBarcode) {
+              handleBarcodeScan(testBarcode);
+              scannerInput.value = '';
+            }
+          }, 2000);
+        }
+        
+        function updateScannerStatus() {
+          const statusEl = document.getElementById('scannerStatus');
+          const statusTextEl = document.getElementById('scannerStatusText');
+          
+          if (!statusEl || !statusTextEl) return;
+          
+          // Check if input is focused (simulating scanner detection)
+          if (document.activeElement === scannerInput) {
+            statusEl.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
+            statusTextEl.textContent = 'Scanner aktif';
+            statusTextEl.className = 'text-sm text-emerald-400';
+          } else {
+            statusEl.className = 'w-3 h-3 rounded-full bg-slate-500';
+            statusTextEl.textContent = 'Klik input untuk aktifkan';
+            statusTextEl.className = 'text-sm text-slate-400';
+          }
+        }
+        
+        // Update scanner status periodically
+        setInterval(updateScannerStatus, 1000);
+        
         // Offline detection
         function setupOfflineDetection() {
           window.addEventListener('online', () => {
@@ -1547,6 +1750,7 @@
           await populateCameras();
           setupMobileGestures();
           setupOfflineDetection();
+          setupHardwareScanner();
         });
 
         // Bulk barcodes
