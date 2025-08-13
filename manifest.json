@@ -1,0 +1,26 @@
+{
+  "name": "Sistem Permit Kendaraan",
+  "short_name": "Permit System",
+  "description": "Sistem manajemen permit kendaraan dengan scan barcode",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHBhdGggZD0iTTQ4IDk2QzQ4IDY5LjQ5IDY5LjQ5IDQ4IDk2IDQ4SDk2QzEyMi41MSA0OCAxNDQgNjkuNDkgMTQ0IDk2Vjk2QzE0NCAxMjIuNTEgMTIyLjUxIDE0NCA5NiAxNDRINjZDNDAuNDYgMTQ0IDE2IDEyMy41NCAxNiA5OFY5NloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik04MCAxMTJDNzIuODM2IDExMiA2NyAxMDYuMTY0IDY3IDk5QzY3IDkxLjgzNiA3Mi44MzYgODcgODAgODdDODcuMTY0IDg3IDkzIDkxLjgzNiA5MyA5OUM5MyAxMDYuMTY0IDg3LjE2NCAxMTIgODAgMTEyWiIgZmlsbD0iIzBmMTcyYSIvPgo8cGF0aCBkPSJNMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTkuMTY0IDg3IDEyNSA5MS44MzYgMTI1IDk5QzEyNSAxMDYuMTY0IDExOS4xNjQgMTEyIDExMiAxMTJaIiBmaWxsPSIjMGYxNzJhIi8+Cjwvc3ZnPgo=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiMwZWE1ZTkiLz4KPHBhdGggZD0iTTEyOCAyNTZDMTI4IDIxOS4zIDExNy4zIDIwOCAxMjggMjU2VjI1NkMxMjggMjkyLjcgMTM4LjcgMzA0IDEyOCAyNTZIMzM2QzI5OS4zIDMwNCAyODggMjkyLjcgMjg4IDI1NlYyNTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjEzLjMzIDI5OC42N0MyMTMuMzMgMjg5LjMzIDIwOS4zMyAyODUuMzMgMjEzLjMzIDI5OC42N1YyOTguNjdDMjEzLjMzIDMwOC4wMSAyMTcuMzMgMzEyLjAxIDIxMy4zMyAyOTguNjdIMzQ2LjY3QzM0Ni42NyAzMDggMzQyLjY3IDMwOC4wMSAzNDYuNjcgMjk4LjY3VjI5OC42N1oiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMjk4LjY3IDI5OC42N0MyOTguNjcgMjg5LjMzIDI5NC42NyAyODUuMzMgMjk4LjY3IDI5OC42N1YyOTguNjdDMjk4LjY3IDMwOC4wMSAzMDIuNjcgMzEyLjAxIDI5OC42NyAyOTguNjdINDAyLjY3QzQwMi42NyAzMDggMzk4LjY3IDMwOC4wMSA0MDIuNjcgMjk4LjY3VjI5OC42N1oiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "id",
+  "dir": "ltr"
+}
