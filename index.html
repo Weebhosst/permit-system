@@ -1,992 +1,1009 @@
-  <!doctype html>
-  <html lang="id">
-    <head>
-      <meta charset="utf-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
-      <meta name="theme-color" content="#0ea5e9">
-      <meta name="apple-mobile-web-app-capable" content="yes">
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-      <meta name="apple-mobile-web-app-title" content="Permit System">
-      <link rel="manifest" href="manifest.json">
-      <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHT0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjMGVhNWU5Ii8+CjxwYXRoIGQ9Ik00OCA5NkM0OCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMxNDQgMTIyLjUxIDEyMi41MSAxNDQgOTYgMTQ0SDY2QzQwLjQ2IDE0NCAxNiAxMjMuNTQgMTYgOThWOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNODAgMTEyQzcwLjgzNiAxMTIgNjcgMTA2LjE2NCA2NyA5OUM2NyA5MS44MzYgNzIuODM2IDg3IDgwIDg3Qzg3LjE2NCA4NyA5MyA5MS44MzYgOTMgOTlDOTMgMTA2LjE2NCA4Ny4xNjQgMTEyIDgwIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTEgODcgMTE1IDkxLjgzNiAxMTUgOTlDMTE1IDEwNi4xNjQgMTExLjE2NCAxMTIgMTEyIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==">
-      <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
-      <meta name="description" content="Aplikasi web untuk manajemen permit data kendaraan dengan barcode, scanner otomatis, impor dari Google Spreadsheet (CSV), dan database SQL (SQLite di browser).">
-      <script src="https://cdn.tailwindcss.com"></script>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkfP+Po86l4N1ZqLgGqF9Q9GZ8V4G4D5l6nNmJXKkQq5rQ31xM4Q0SYJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-      <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-      <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-      <style>
-        :root {
-          --brand: #0ea5e9;
-          --brand-dark: #0284c7;
-          --ink: #0f172a;
-          --muted: #64748b;
-          --bg: #0b1220;
-          --card: rgba(255,255,255,0.06);
-          --stroke: rgba(255,255,255,0.12);
-          --success: #10b981;
-          --warning: #f59e0b;
-          --danger: #ef4444;
-        }
-        html, body {
-          background: radial-gradient(1200px 800px at 80% -20%, rgba(56,189,248,0.15), transparent 60%),
-                      radial-gradient(900px 600px at 10% 10%, rgba(16,185,129,0.12), transparent 50%),
-                      #0b1220;
-          color: #e5e7eb;
-          min-height: 100%;
-        }
-        .glass {
-          background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
-          border: 1px solid var(--stroke);
-          backdrop-filter: blur(10px);
-        }
-        .card {
-          background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-          border: 1px solid var(--stroke);
-          border-radius: 14px;
-        }
-        .stroke {
-          border: 1px solid var(--stroke);
-        }
-        .tab-active {
-          background: linear-gradient(180deg, rgba(56,189,248,0.18), rgba(56,189,248,0.08));
-          border: 1px solid rgba(56,189,248,0.35);
-          color: #e0f2fe;
-          box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
-        }
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Permit System">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHT0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjMGVhNWU5Ii8+CjxwYXRoIGQ9Ik00OCA5NkM0OCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMxNDQgMTIyLjUxIDEyMi41MSAxNDQgOTYgMTQ0SDY2QzQwLjQ2IDE0NCAxNiAxMjMuNTQgMTYgOThWOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNODAgMTEyQzcwLjgzNiAxMTIgNjcgMTA2LjE2NCA2NyA5OUM2NyA5MS44MzYgNzIuODM2IDg3IDgwIDg3Qzg3LjE2NCA4NyA5MyA5MS44MzYgOTMgOTlDOTMgMTA2LjE2NCA4Ny4xNjQgMTEyIDgwIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTEgODcgMTE1IDkxLjgzNiAxMTUgOTlDMTE1IDEwNi4xNjQgMTExLjE2NCAxMTIgMTEyIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==">
+    <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
+    <meta name="description" content="Aplikasi web untuk manajemen permit data kendaraan dengan barcode, scanner otomatis, impor dari Google Spreadsheet (CSV), dan database SQL (SQLite di browser).">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkfP+Po86l4N1ZqLgGqF9Q9GZ8V4G4D5l6nNmJXKkQq5rQ31xM4Q0SYJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@0.20.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      :root {
+        --brand: #0ea5e9;
+        --brand-dark: #0284c7;
+        --ink: #0f172a;
+        --muted: #64748b;
+        --bg: #0b1220;
+        --card: rgba(255,255,255,0.06);
+        --stroke: rgba(255,255,255,0.12);
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+      }
+      html, body {
+        background: radial-gradient(1200px 800px at 80% -20%, rgba(56,189,248,0.15), transparent 60%),
+                    radial-gradient(900px 600px at 10% 10%, rgba(16,185,129,0.12), transparent 50%),
+                    #0b1220;
+        color: #e5e7eb;
+        min-height: 100%;
+      }
+      .glass {
+        background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+        border: 1px solid var(--stroke);
+        backdrop-filter: blur(10px);
+      }
+      .card {
+        background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+      }
+      .stroke {
+        border: 1px solid var(--stroke);
+      }
+      .tab-active {
+        background: linear-gradient(180deg, rgba(56,189,248,0.18), rgba(56,189,248,0.08));
+        border: 1px solid rgba(56,189,248,0.35);
+        color: #e0f2fe;
+        box-shadow: 0 0 0 3px rgba(56,189,248,0.1);
+      }
+      .grid-auto-fit {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1rem;
+      }
+      .scanner-frame {
+        position: absolute;
+        inset: 10%;
+        border: 2px dashed rgba(56,189,248,0.65);
+        border-radius: 16px;
+        box-shadow: 0 0 0 20000px rgba(0,0,0,0.35) inset;
+        pointer-events: none;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        font-size: .8rem;
+        border-radius: 9999px;
+        padding: .25rem .6rem;
+        border: 1px solid var(--stroke);
+        background: rgba(255,255,255,0.06);
+      }
+      .status-active  { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.35); color: #a7f3d0; }
+      .status-expired { background: rgba(239,68,68,0.15);  border-color: rgba(239,68,68,0.35);  color: #fecaca; }
+      .status-pending { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.35); color: #fde68a; }
+      .table-wrap { overflow: auto; border-radius: 12px; border: 1px solid var(--stroke); }
+      table thead th { background: rgba(255,255,255,0.06); text-align: left; font-weight: 600; color: #cbd5e1; }
+      table td, table th { padding: .75rem .9rem; white-space: nowrap; }
+      .print-card {
+        width: 86mm; height: 54mm; /* ID-1 card */
+        background: white; color: #111827;
+        border-radius: 8px; border: 1px solid #e5e7eb;
+        padding: 10px; display: grid; grid-template-rows: auto 1fr auto; gap: 6px;
+      }
+      .print-card .hline { height: 1px; background: #e5e7eb; }
+      .fade-in { animation: fade .25s ease-out; }
+      @keyframes fade { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: none; } }
+      @media print {
+        body * { visibility: hidden; }
+        #print-area, #print-area * { visibility: visible; }
+        #print-area { position: absolute; inset: 0; background: white; padding: 16px; }
+      }
+      
+      /* Mobile Optimization */
+      @media (max-width: 768px) {
         .grid-auto-fit {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-          gap: 1rem;
+          grid-template-columns: 1fr;
+          gap: 0.75rem;
         }
-        .scanner-frame {
-          position: absolute;
-          inset: 10%;
-          border: 2px dashed rgba(56,189,248,0.65);
-          border-radius: 16px;
-          box-shadow: 0 0 0 20000px rgba(0,0,0,0.35) inset;
-          pointer-events: none;
+        
+        .card {
+          border-radius: 12px;
+          margin: 0.5rem;
         }
-        .badge {
-          display: inline-flex;
-          align-items: center;
-          gap: .4rem;
-          font-size: .8rem;
-          border-radius: 9999px;
-          padding: .25rem .6rem;
-          border: 1px solid var(--stroke);
-          background: rgba(255,255,255,0.06);
+        
+        table td, table th {
+          padding: 0.5rem 0.6rem;
+          font-size: 0.875rem;
         }
-        .status-active  { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.35); color: #a7f3d0; }
-        .status-expired { background: rgba(239,68,68,0.15);  border-color: rgba(239,68,68,0.35);  color: #fecaca; }
-        .status-pending { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.35); color: #fde68a; }
-        .table-wrap { overflow: auto; border-radius: 12px; border: 1px solid var(--stroke); }
-        table thead th { background: rgba(255,255,255,0.06); text-align: left; font-weight: 600; color: #cbd5e1; }
-        table td, table th { padding: .75rem .9rem; white-space: nowrap; }
+        
         .print-card {
-          width: 86mm; height: 54mm; /* ID-1 card */
-          background: white; color: #111827;
-          border-radius: 8px; border: 1px solid #e5e7eb;
-          padding: 10px; display: grid; grid-template-rows: auto 1fr auto; gap: 6px;
-        }
-        .print-card .hline { height: 1px; background: #e5e7eb; }
-        .fade-in { animation: fade .25s ease-out; }
-        @keyframes fade { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: none; } }
-        @media print {
-          body * { visibility: hidden; }
-          #print-area, #print-area * { visibility: visible; }
-          #print-area { position: absolute; inset: 0; background: white; padding: 16px; }
+          width: 100%;
+          height: auto;
+          min-height: 200px;
         }
         
-        /* Mobile Optimization */
-        @media (max-width: 768px) {
-          .grid-auto-fit {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-          }
-          
-          .card {
-            border-radius: 12px;
-            margin: 0.5rem;
-          }
-          
-          table td, table th {
-            padding: 0.5rem 0.6rem;
-            font-size: 0.875rem;
-          }
-          
-          .print-card {
-            width: 100%;
-            height: auto;
-            min-height: 200px;
-          }
-          
-          /* Touch-friendly buttons */
-          button, .btn {
-            min-height: 44px;
-            min-width: 44px;
-            padding: 0.75rem 1rem;
-          }
-          
-          /* Mobile navigation */
-          .tab-nav {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-          }
-          
-          .tab-nav button {
-            white-space: nowrap;
-            flex-shrink: 0;
-          }
+        /* Touch-friendly buttons */
+        button, .btn {
+          min-height: 44px;
+          min-width: 44px;
+          padding: 0.75rem 1rem;
         }
         
-        /* PWA specific styles */
-        @media (display-mode: standalone) {
-          body {
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-          }
-          
-          header {
-            padding-top: calc(1rem + env(safe-area-inset-top));
-          }
+        /* Mobile navigation */
+        .tab-nav {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
         }
         
-        /* Touch feedback */
-        .touch-feedback {
-          transition: transform 0.1s ease;
+        .tab-nav button {
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+      }
+      
+      /* PWA specific styles */
+      @media (display-mode: standalone) {
+        body {
+          padding-top: env(safe-area-inset-top);
+          padding-bottom: env(safe-area-inset-bottom);
         }
         
-        .touch-feedback:active {
-          transform: scale(0.95);
+        header {
+          padding-top: calc(1rem + env(safe-area-inset-top));
         }
-        
-        /* Swipe gestures */
-        .swipe-container {
-          touch-action: pan-y;
-          overflow-x: hidden;
-        }
-      </style>
-    </head>
-          <body class="antialiased swipe-container">
-        <header class="sticky top-0 z-30 glass">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="h-10 w-10 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300">
-              <i class="fa-solid fa-car-rear"></i>
-            </div>
-            <div>
-              <h1 class="text-xl font-semibold tracking-wide">Sistem Permit Kendaraan</h1>
-              <p class="text-xs text-slate-400 -mt-1">Barcode • Scanner Otomatis • Spreadsheet/SQL</p>
-            </div>
+      }
+      
+      /* Touch feedback */
+      .touch-feedback {
+        transition: transform 0.1s ease;
+      }
+      
+      .touch-feedback:active {
+        transform: scale(0.95);
+      }
+      
+      /* Swipe gestures */
+      .swipe-container {
+        touch-action: pan-y;
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+        <body class="antialiased swipe-container">
+      <header class="sticky top-0 z-30 glass">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300">
+            <i class="fa-solid fa-car-rear"></i>
           </div>
-          <div class="hidden md:flex items-center gap-2">
-            <button id="saveDbBtn" class="px-3 py-2 rounded-lg border border-sky-400/30 hover:border-sky-400/60 text-sky-200 hover:text-sky-100">Simpan ke Browser</button>
-            <button id="exportDbBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sky-50"><i class="fa-solid fa-download mr-2"></i>Unduh Database</button>
+          <div>
+            <h1 class="text-xl font-semibold tracking-wide">Sistem Permit Kendaraan</h1>
+            <p class="text-xs text-slate-400 -mt-1">Barcode • Scanner Otomatis • Spreadsheet/SQL</p>
           </div>
         </div>
-        <nav class="max-w-7xl mx-auto px-4 pb-4 tab-nav">
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="dashboard"><i class="fa-solid fa-gauge-high mr-2"></i>Dashboard</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="data"><i class="fa-solid fa-table mr-2"></i>Data</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="new"><i class="fa-solid fa-square-plus mr-2"></i>Tambah Permit</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="scan"><i class="fa-solid fa-barcode mr-2"></i>Scan Barcode</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="logs"><i class="fa-solid fa-clipboard-list mr-2"></i>Log</button>
-            <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="import"><i class="fa-solid fa-file-import mr-2"></i>Impor/Ekspor</button>
-          </div>
-        </nav>
-      </header>
+        <div class="hidden md:flex items-center gap-2">
+          <button id="saveDbBtn" class="px-3 py-2 rounded-lg border border-sky-400/30 hover:border-sky-400/60 text-sky-200 hover:text-sky-100">Simpan ke Browser</button>
+          <button id="exportDbBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sky-50"><i class="fa-solid fa-download mr-2"></i>Unduh Database</button>
+        </div>
+      </div>
+      <nav class="max-w-7xl mx-auto px-4 pb-4 tab-nav">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="dashboard"><i class="fa-solid fa-gauge-high mr-2"></i>Dashboard</button>
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="data"><i class="fa-solid fa-table mr-2"></i>Data</button>
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="new"><i class="fa-solid fa-square-plus mr-2"></i>Tambah Permit</button>
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="scan"><i class="fa-solid fa-barcode mr-2"></i>Scan Barcode</button>
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="logs"><i class="fa-solid fa-clipboard-list mr-2"></i>Log</button>
+          <button class="tab-btn card px-3 py-2 rounded-xl touch-feedback" data-tab="import"><i class="fa-solid fa-file-import mr-2"></i>Impor/Ekspor</button>
+        </div>
+      </nav>
+    </header>
 
-      <main class="max-w-7xl mx-auto px-4 space-y-8 py-6">
-        <section class="relative card rounded-2xl overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-emerald-500/10 to-transparent"></div>
-          <div class="relative grid md:grid-cols-2 gap-6 p-6">
-            <div class="space-y-3">
-              <h2 class="text-2xl font-semibold">Kelola Akses Kendaraan dengan Cepat dan Aman</h2>
-              <p class="text-slate-300">Buat permit, generate barcode, scan otomatis menggunakan kamera, catat keluar/masuk, dan sinkronkan data dari Google Spreadsheet atau gunakan database SQL di browser.</p>
-              <div class="flex flex-wrap gap-2">
-                <span class="badge"><i class="fa-solid fa-qrcode"></i><span>Barcode CODE128</span></span>
-                <span class="badge"><i class="fa-solid fa-camera"></i><span>Scanner Otomatis</span></span>
-                <span class="badge"><i class="fa-solid fa-database"></i><span>SQLite (sql.js)</span></span>
-                <span class="badge"><i class="fa-solid fa-file-csv"></i><span>Google Sheets CSV</span></span>
+    <main class="max-w-7xl mx-auto px-4 space-y-8 py-6">
+      <section class="relative card rounded-2xl overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-sky-500/10 via-emerald-500/10 to-transparent"></div>
+        <div class="relative grid md:grid-cols-2 gap-6 p-6">
+          <div class="space-y-3">
+            <h2 class="text-2xl font-semibold">Kelola Akses Kendaraan dengan Cepat dan Aman</h2>
+            <p class="text-slate-300">Buat permit, generate barcode, scan otomatis menggunakan kamera, catat keluar/masuk, dan sinkronkan data dari Google Spreadsheet atau gunakan database SQL di browser.</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="badge"><i class="fa-solid fa-qrcode"></i><span>Barcode CODE128</span></span>
+              <span class="badge"><i class="fa-solid fa-camera"></i><span>Scanner Otomatis</span></span>
+              <span class="badge"><i class="fa-solid fa-database"></i><span>SQLite (sql.js)</span></span>
+              <span class="badge"><i class="fa-solid fa-file-csv"></i><span>Google Sheets CSV</span></span>
+            </div>
+          </div>
+          <div class="w-full h-48 md:h-40 lg:h-48 rounded-xl overflow-hidden border border-sky-400/20 bg-sky-950/30">
+            <img
+              src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1f760514-eded-47ee-a04a-41dc3256348f.png"
+              alt="Pemandangan gerbang keamanan kantor modern pada sore hari, petugas keamanan sedang memindai barcode pada kaca mobil menggunakan pemindai, suasana profesional dan aman dengan lampu jalan lembut dan gedung kantor di latar belakang, gaya fotografi realistis berwarna biru kehijauan"
+              class="w-full h-full object-cover"
+              onerror="this.onerror=null; this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e3b4aa07-b687-418b-81b3-efab53819a9b.png';"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="tab-section fade-in">
+        <div class="grid-auto-fit">
+          <div class="card p-5 rounded-xl">
+            <div class="text-slate-400 text-sm">Total Permit</div>
+            <div class="mt-2 text-3xl font-semibold" id="statTotal">0</div>
+          </div>
+          <div class="card p-5 rounded-xl">
+            <div class="text-slate-400 text-sm">Aktif</div>
+            <div class="mt-2 text-3xl font-semibold text-emerald-300" id="statActive">0</div>
+          </div>
+          <div class="card p-5 rounded-xl">
+            <div class="text-slate-400 text-sm">Kadaluarsa</div>
+            <div class="mt-2 text-3xl font-semibold text-rose-300" id="statExpired">0</div>
+          </div>
+          <div class="card p-5 rounded-xl">
+            <div class="text-slate-400 text-sm">Scan Hari Ini</div>
+            <div class="mt-2 text-3xl font-semibold text-sky-300" id="statTodayScans">0</div>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mt-6">
+          <div class="card p-5 rounded-xl">
+            <h3 class="font-semibold mb-3">Petunjuk Singkat</h3>
+            <ol class="list-decimal list-inside text-slate-300 space-y-2">
+              <li>Pilih tab "Impor/Ekspor" untuk mengimpor data dari Google Sheets (CSV) atau unggah file CSV Anda.</li>
+              <li>Atau, gunakan tab "Tambah Permit" untuk menambah data baru dan generate barcode secara otomatis.</li>
+              <li>Gunakan tab "Scan Barcode" untuk memindai menggunakan kamera. Sistem otomatis cocokkan dengan data, tampilkan detail, dan catat log.</li>
+              <li>Gunakan "Simpan ke Browser" agar database tersimpan dan kembali saat membuka lagi.</li>
+            </ol>
+          </div>
+          <div class="card p-5 rounded-xl">
+            <h3 class="font-semibold mb-3">Format Kolom CSV yang Didukung</h3>
+            <div class="text-slate-300">
+              Header yang direkomendasikan:
+              <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                <span class="badge">permit_code</span>
+                <span class="badge">plate</span>
+                <span class="badge">owner</span>
+                <span class="badge">type</span>
+                <span class="badge">valid_from (YYYY-MM-DD)</span>
+                <span class="badge">valid_to (YYYY-MM-DD)</span>
+                <span class="badge">status</span>
+                <span class="badge">notes</span>
+              </div>
+              <p class="mt-3 text-sm text-slate-400">Sistem akan berusaha memetakan kolom umum berbahasa Indonesia atau Inggris (misal "nopol", "nomor polisi", "pemilik").</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="data" class="tab-section hidden fade-in">
+        <div class="card p-5 rounded-xl space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center gap-3">
+            <div class="flex-1 relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input id="searchInput" type="text" placeholder="Cari permit: kode/plat/pemilik/jenis..." class="w-full pl-10 pr-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50">
+            </div>
+            <select id="statusFilter" class="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              <option value="">Semua Status</option>
+              <option value="active">Aktif</option>
+              <option value="expired">Kadaluarsa</option>
+              <option value="pending">Menunggu</option>
+            </select>
+            <button id="refreshTableBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Refresh</button>
+          </div>
+          <div class="table-wrap">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th>Kode Permit</th>
+                  <th>Plat</th>
+                  <th>Pemilik</th>
+                  <th>Jenis</th>
+                  <th>Berlaku</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody" class="bg-slate-900/40"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 mt-6">
+          <div class="card p-5 rounded-xl">
+            <h3 class="font-semibold mb-3">Ringkasan Terpilih</h3>
+            <div id="selectedInfo" class="text-slate-300 text-sm">Pilih baris data untuk melihat detail.</div>
+          </div>
+          <div class="card p-5 rounded-xl">
+            <h3 class="font-semibold mb-3">Barcode</h3>
+            <div class="flex items-center gap-3 mb-3">
+              <input id="barcodeText" type="text" placeholder="Masukkan teks/kode untuk barcode" class="flex-1 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              <button id="generateBarcodeBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-barcode mr-2"></i>Generate</button>
+            </div>
+            <div class="rounded-lg border border-slate-700 p-4 bg-slate-900/40 overflow-auto">
+              <svg id="barcodeSvg" class="mx-auto"></svg>
+            </div>
+            <div class="mt-3 flex gap-2">
+              <button id="printCardBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-print mr-2"></i>Cetak Kartu</button>
+              <button id="downloadBarcodeBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-download mr-2"></i>Unduh SVG</button>
+            </div>
+          </div>
+        </div>
+
+      <div class="card p-5 rounded-xl mt-6">
+        <h3 class="font-semibold mb-3">Generate Barcode Batang (Massal)</h3>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="text-sm text-slate-300">Daftar Kode (satu per baris)</label>
+            <textarea id="bulkCodes" rows="6" placeholder="PRM-2025-0001\nPRM-2025-0002\nPRM-2025-0003" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"></textarea>
+          </div>
+          <div class="space-y-3">
+            <div>
+              <label class="text-sm text-slate-300">Lebar Garis</label>
+              <input id="bulkWidth" type="number" min="1" max="6" value="3" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            </div>
+            <div>
+              <label class="text-sm text-slate-300">Tinggi</label>
+              <input id="bulkHeight" type="number" min="40" max="200" value="100" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            </div>
+            <div class="flex gap-2 pt-1">
+              <button id="bulkGenerateBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-bars mr-2"></i>Generate</button>
+              <button id="bulkClearBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 w-full"><i class="fa-solid fa-eraser mr-2"></i>Clear</button>
+            </div>
+            <button id="bulkPrintBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 w-full"><i class="fa-solid fa-print mr-2"></i>Print Sheet</button>
+          </div>
+        </div>
+        <div id="bulkContainer" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+      </div>
+      </section>
+
+      <section id="new" class="tab-section hidden fade-in">
+        <div class="grid md:grid-cols-3 gap-6">
+          <form id="newForm" class="md:col-span-2 card p-5 rounded-xl space-y-4">
+            <h3 class="font-semibold">Tambah Permit Baru</h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm text-slate-300">Kode Permit</label>
+                <input id="f_permit_code" type="text" placeholder="Kosongkan untuk otomatis" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">Plat Nomor</label>
+                <input id="f_plate" type="text" placeholder="B 1234 ABC" required class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">Pemilik</label>
+                <input id="f_owner" type="text" placeholder="Nama pemilik" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">Jenis Kendaraan</label>
+                <input id="f_type" type="text" placeholder="Mobil/Motor/Truck" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">MASA BERLAKU STNK</label>
+                <input id="f_stnk" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">MASA BERLAKU SIM C</label>
+                <input id="f_simc" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">MASA BERLAKU SIM A</label>
+                <input id="f_sima" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              </div>
+              <div>
+                <label class="text-sm text-slate-300">Status</label>
+                <select id="f_status" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+                  <option value="active">Aktif</option>
+                  <option value="pending">Menunggu</option>
+                  <option value="expired">Kadaluarsa</option>
+                </select>
+              </div>
+              <div class="md:col-span-2">
+                <label class="text-sm text-slate-300">Catatan</label>
+                <textarea id="f_notes" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700" placeholder="Keterangan tambahan"></textarea>
               </div>
             </div>
-            <div class="w-full h-48 md:h-40 lg:h-48 rounded-xl overflow-hidden border border-sky-400/20 bg-sky-950/30">
+            <div class="flex flex-wrap gap-2">
+              <button class="px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30" type="submit"><i class="fa-solid fa-check mr-2"></i>Simpan</button>
+              <button id="generateCodeBtn" class="px-4 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30" type="button"><i class="fa-solid fa-magic-wand-sparkles mr-2"></i>Generate Kode</button>
+              <button class="px-4 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600" type="reset"><i class="fa-solid fa-eraser mr-2"></i>Reset</button>
+            </div>
+            <p id="formMsg" class="text-sm text-slate-300"></p>
+          </form>
+
+          <div class="card p-5 rounded-xl space-y-3">
+            <h3 class="font-semibold">Pratinjau Kartu Permit</h3>
+            <div class="print-card" id="permitPreview">
+              <div class="flex items-center justify-between">
+                <div class="text-xs">
+                  <div class="font-semibold">PERMIT KENDARAAN</div>
+                  <div class="text-slate-500">Akses Area Terbatas</div>
+                </div>
+                <div class="text-[10px] text-slate-500">Validasi</div>
+              </div>
+              <div class="hline"></div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <div class="text-slate-500">Kode</div>
+                  <div id="pp_code" class="font-semibold">-</div>
+                </div>
+                <div>
+                  <div class="text-slate-500">Plat</div>
+                  <div id="pp_plate" class="font-semibold">-</div>
+                </div>
+                <div>
+                  <div class="text-slate-500">Pemilik</div>
+                  <div id="pp_owner" class="font-semibold truncate">-</div>
+                </div>
+                <div>
+                  <div class="text-slate-500">Jenis</div>
+                  <div id="pp_type" class="font-semibold">-</div>
+                </div>
+                <div class="col-span-2 grid grid-cols-2 gap-2">
+                  <div>
+                    <div class="text-slate-500">Masa Berlaku STNK</div>
+                    <div id="pp_stnk" class="font-semibold">-</div>
+                  </div>
+                  <div>
+                    <div class="text-slate-500">Masa Berlaku SIM C</div>
+                    <div id="pp_simc" class="font-semibold">-</div>
+                  </div>
+                  <div>
+                    <div class="text-slate-500">Masa Berlaku SIM A</div>
+                    <div id="pp_sima" class="font-semibold">-</div>
+                  </div>
+                </div>
+              </div>
+              <div class="hline"></div>
+              <div class="flex items-center justify-center">
+                <svg id="pp_barcode"></svg>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button id="printPreviewBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 w-full"><i class="fa-solid fa-print mr-2"></i>Cetak</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scan" class="tab-section hidden fade-in">
+        <!-- Hardware Scanner Section -->
+        <div class="card p-5 rounded-xl space-y-4 mb-6">
+          <h3 class="font-semibold text-sky-300">
+            <i class="fa-solid fa-barcode mr-2"></i>Hardware Barcode Scanner
+          </h3>
+          <p class="text-slate-300">Gunakan USB/Bluetooth barcode scanner untuk scan yang lebih cepat dan akurat.</p>
+          
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label class="text-sm text-slate-300 mb-2 block">Input Hardware Scanner:</label>
+              <div class="relative">
+                <input 
+                  id="hardwareScannerInput" 
+                  type="text" 
+                  placeholder="Scan barcode dengan hardware scanner..." 
+                  class="w-full px-4 py-4 rounded-lg bg-slate-800/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50 text-lg font-mono touch-feedback"
+                  autocomplete="off"
+                  autofocus
+                >
+                <div class="absolute right-4 top-1/2 -translate-y-1/2">
+                  <i class="fa-solid fa-barcode text-slate-400 text-xl"></i>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-2">
+                <i class="fa-solid fa-info-circle mr-1"></i>
+                Hubungkan USB/Bluetooth scanner ke komputer, lalu scan barcode. 
+                Scanner akan otomatis focus ke input ini.
+              </p>
+            </div>
+            <div>
+              <label class="text-sm text-slate-300 mb-2 block">Status Scanner:</label>
+              <div class="flex items-center gap-2 mb-3">
+                <div id="scannerStatus" class="w-3 h-3 rounded-full bg-slate-500 animate-pulse"></div>
+                <span id="scannerStatusText" class="text-sm text-slate-400">Tidak terdeteksi</span>
+              </div>
+              <div class="space-y-2">
+                <button id="testScannerBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sm touch-feedback w-full">
+                  <i class="fa-solid fa-vial mr-2"></i>Test Scanner
+                </button>
+                <button id="clearScannerBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 text-sm touch-feedback w-full">
+                  <i class="fa-solid fa-eraser mr-2"></i>Clear Input
+                </button>
+              </div>
+              <div class="mt-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700">
+                <h4 class="text-sm font-medium text-slate-300 mb-2">Cara Setup:</h4>
+                <ol class="text-xs text-slate-400 space-y-1 list-decimal list-inside">
+                  <li>Hubungkan scanner via USB/Bluetooth</li>
+                  <li>Scanner otomatis terdeteksi sebagai keyboard</li>
+                  <li>Klik input field di atas</li>
+                  <li>Scan barcode - data langsung masuk</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="hline mb-6"></div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="md:col-span-2 card p-4 rounded-xl">
+            <div class="flex flex-wrap items-center gap-3 mb-3">
+              <select id="cameraSelect" class="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"></select>
+              <button id="startScanBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-play mr-2"></i>Mulai</button>
+              <button id="stopScanBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-stop mr-2"></i>Stop</button>
+              <label class="inline-flex items-center gap-2 ml-auto">
+                <input id="autoLogToggle" type="checkbox" class="accent-sky-400">
+                <span class="text-sm text-slate-300">Auto catat log</span>
+              </label>
+            </div>
+            <div class="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-900/50">
+              <video id="video" class="w-full h-[360px] bg-black object-cover" playsinline muted autoplay></video>
+              <div class="scanner-frame"></div>
+            </div>
+            <div id="scanMsg" class="mt-3 text-sm text-slate-300">Izinkan akses kamera untuk memulai pemindaian.</div>
+          </div>
+          <div class="card p-4 rounded-xl space-y-3">
+            <h3 class="font-semibold">Hasil Scan</h3>
+            <div class="text-sm text-slate-300">Kode Terbaca:</div>
+            <div id="scanCode" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900/50 font-mono">-</div>
+            <div class="text-sm text-slate-300">Detail:</div>
+            <div id="scanMatch">
+              <div class="rounded-lg border border-slate-700 bg-slate-900/50 p-3 text-sm">Belum ada.</div>
+            </div>
+            <div class="flex gap-2">
+              <button id="manualInBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-door-open mr-2"></i>Catat IN</button>
+              <button id="manualOutBtn" class="px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30 w-full"><i class="fa-solid fa-door-closed mr-2"></i>Catat OUT</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="logs" class="tab-section hidden fade-in">
+        <div class="card p-5 rounded-xl space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center gap-3">
+            <div class="flex-1 relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+              <input id="searchLogInput" type="text" placeholder="Cari log: kode/plat/event..." class="w-full pl-10 pr-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            </div>
+            <button id="clearLogsBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-trash mr-2"></i>Bersihkan Log</button>
+          </div>
+          <div class="table-wrap">
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Event</th>
+                  <th>Kode Permit</th>
+                  <th>Plat</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody" class="bg-slate-900/40"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="import" class="tab-section hidden fade-in">
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card p-5 rounded-xl space-y-3">
+            <h3 class="font-semibold">Impor dari Google Sheets (CSV)</h3>
+            <p class="text-sm text-slate-300">Publikasikan sheet Anda sebagai CSV: File → Share → Publish to web → Link → Entire document → CSV. Salin URL CSV dan tempel di bawah.</p>
+            <div class="flex gap-2">
+              <input id="csvUrlInput" type="url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" class="flex-1 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+              <button id="loadCsvBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>Muat</button>
+            </div>
+            <div id="csvMsg" class="text-sm text-slate-300"></div>
+            <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-900/40">
               <img
-                src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1f760514-eded-47ee-a04a-41dc3256348f.png"
-                alt="Pemandangan gerbang keamanan kantor modern pada sore hari, petugas keamanan sedang memindai barcode pada kaca mobil menggunakan pemindai, suasana profesional dan aman dengan lampu jalan lembut dan gedung kantor di latar belakang, gaya fotografi realistis berwarna biru kehijauan"
-                class="w-full h-full object-cover"
-                onerror="this.onerror=null; this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e3b4aa07-b687-418b-81b3-efab53819a9b.png';"
+                src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2360737b-56a9-465a-a273-db1212f3245a.png"
+                alt="Ilustrasi detail langkah demi langkah cara mempublikasikan Google Sheets menjadi file CSV, menyorot menu File, Share, Publish to web, memilih Entire document dan format CSV, gaya antarmuka minimalis"
+                class="w-full h-40 object-cover"
+                onerror="this.onerror=null; this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5982ef22-8dee-4667-a6b7-83550e1c167b.png';"
               />
             </div>
           </div>
-        </section>
 
-        <section id="dashboard" class="tab-section fade-in">
-          <div class="grid-auto-fit">
-            <div class="card p-5 rounded-xl">
-              <div class="text-slate-400 text-sm">Total Permit</div>
-              <div class="mt-2 text-3xl font-semibold" id="statTotal">0</div>
+          <div class="card p-5 rounded-xl space-y-3">
+            <h3 class="font-semibold">Impor CSV Lokal</h3>
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+            <div class="flex gap-2">
+              <button id="importCsvBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-file-arrow-up mr-2"></i>Impor</button>
+              <button id="downloadCsvBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-file-csv mr-2"></i>Ekspor CSV</button>
             </div>
-            <div class="card p-5 rounded-xl">
-              <div class="text-slate-400 text-sm">Aktif</div>
-              <div class="mt-2 text-3xl font-semibold text-emerald-300" id="statActive">0</div>
-            </div>
-            <div class="card p-5 rounded-xl">
-              <div class="text-slate-400 text-sm">Kadaluarsa</div>
-              <div class="mt-2 text-3xl font-semibold text-rose-300" id="statExpired">0</div>
-            </div>
-            <div class="card p-5 rounded-xl">
-              <div class="text-slate-400 text-sm">Scan Hari Ini</div>
-              <div class="mt-2 text-3xl font-semibold text-sky-300" id="statTodayScans">0</div>
-            </div>
+            <p class="text-sm text-slate-300">Catatan: Kolom yang tidak ada akan diabaikan. Duplikasi permit_code akan dilewati.</p>
           </div>
-          <div class="grid md:grid-cols-2 gap-6 mt-6">
-            <div class="card p-5 rounded-xl">
-              <h3 class="font-semibold mb-3">Petunjuk Singkat</h3>
-              <ol class="list-decimal list-inside text-slate-300 space-y-2">
-                <li>Pilih tab "Impor/Ekspor" untuk mengimpor data dari Google Sheets (CSV) atau unggah file CSV Anda.</li>
-                <li>Atau, gunakan tab "Tambah Permit" untuk menambah data baru dan generate barcode secara otomatis.</li>
-                <li>Gunakan tab "Scan Barcode" untuk memindai menggunakan kamera. Sistem otomatis cocokkan dengan data, tampilkan detail, dan catat log.</li>
-                <li>Gunakan "Simpan ke Browser" agar database tersimpan dan kembali saat membuka lagi.</li>
-              </ol>
-            </div>
-            <div class="card p-5 rounded-xl">
-              <h3 class="font-semibold mb-3">Format Kolom CSV yang Didukung</h3>
-              <div class="text-slate-300">
-                Header yang direkomendasikan:
-                <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
-                  <span class="badge">permit_code</span>
-                  <span class="badge">plate</span>
-                  <span class="badge">owner</span>
-                  <span class="badge">type</span>
-                  <span class="badge">valid_from (YYYY-MM-DD)</span>
-                  <span class="badge">valid_to (YYYY-MM-DD)</span>
-                  <span class="badge">status</span>
-                  <span class="badge">notes</span>
-                </div>
-                <p class="mt-3 text-sm text-slate-400">Sistem akan berusaha memetakan kolom umum berbahasa Indonesia atau Inggris (misal "nopol", "nomor polisi", "pemilik").</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="data" class="tab-section hidden fade-in">
-          <div class="card p-5 rounded-xl space-y-4">
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <div class="flex-1 relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input id="searchInput" type="text" placeholder="Cari permit: kode/plat/pemilik/jenis..." class="w-full pl-10 pr-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50">
-              </div>
-              <select id="statusFilter" class="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                <option value="">Semua Status</option>
-                <option value="active">Aktif</option>
-                <option value="expired">Kadaluarsa</option>
-                <option value="pending">Menunggu</option>
-              </select>
-              <button id="refreshTableBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Refresh</button>
-            </div>
-            <div class="table-wrap">
-              <table class="min-w-full">
-                <thead>
-                  <tr>
-                    <th>Kode Permit</th>
-                    <th>Plat</th>
-                    <th>Pemilik</th>
-                    <th>Jenis</th>
-                    <th>Berlaku</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="dataTableBody" class="bg-slate-900/40"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-6 mt-6">
-            <div class="card p-5 rounded-xl">
-              <h3 class="font-semibold mb-3">Ringkasan Terpilih</h3>
-              <div id="selectedInfo" class="text-slate-300 text-sm">Pilih baris data untuk melihat detail.</div>
-            </div>
-            <div class="card p-5 rounded-xl">
-              <h3 class="font-semibold mb-3">Barcode</h3>
-              <div class="flex items-center gap-3 mb-3">
-                <input id="barcodeText" type="text" placeholder="Masukkan teks/kode untuk barcode" class="flex-1 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                <button id="generateBarcodeBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-barcode mr-2"></i>Generate</button>
-              </div>
-              <div class="rounded-lg border border-slate-700 p-4 bg-slate-900/40 overflow-auto">
-                <svg id="barcodeSvg" class="mx-auto"></svg>
-              </div>
-              <div class="mt-3 flex gap-2">
-                <button id="printCardBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-print mr-2"></i>Cetak Kartu</button>
-                <button id="downloadBarcodeBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-download mr-2"></i>Unduh SVG</button>
-              </div>
-            </div>
-          </div>
-
-        <div class="card p-5 rounded-xl mt-6">
-          <h3 class="font-semibold mb-3">Generate Barcode Batang (Massal)</h3>
-          <div class="grid md:grid-cols-3 gap-4">
-            <div class="md:col-span-2">
-              <label class="text-sm text-slate-300">Daftar Kode (satu per baris)</label>
-              <textarea id="bulkCodes" rows="6" placeholder="PRM-2025-0001\nPRM-2025-0002\nPRM-2025-0003" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"></textarea>
-            </div>
-            <div class="space-y-3">
-              <div>
-                <label class="text-sm text-slate-300">Lebar Garis</label>
-                <input id="bulkWidth" type="number" min="1" max="6" value="3" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              </div>
-              <div>
-                <label class="text-sm text-slate-300">Tinggi</label>
-                <input id="bulkHeight" type="number" min="40" max="200" value="100" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              </div>
-              <div class="flex gap-2 pt-1">
-                <button id="bulkGenerateBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-bars mr-2"></i>Generate</button>
-                <button id="bulkClearBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 w-full"><i class="fa-solid fa-eraser mr-2"></i>Clear</button>
-              </div>
-              <button id="bulkPrintBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 w-full"><i class="fa-solid fa-print mr-2"></i>Print Sheet</button>
-            </div>
-          </div>
-          <div id="bulkContainer" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
-        </section>
-
-        <section id="new" class="tab-section hidden fade-in">
-          <div class="grid md:grid-cols-3 gap-6">
-            <form id="newForm" class="md:col-span-2 card p-5 rounded-xl space-y-4">
-              <h3 class="font-semibold">Tambah Permit Baru</h3>
-              <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label class="text-sm text-slate-300">Kode Permit</label>
-                  <input id="f_permit_code" type="text" placeholder="Kosongkan untuk otomatis" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">Plat Nomor</label>
-                  <input id="f_plate" type="text" placeholder="B 1234 ABC" required class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">Pemilik</label>
-                  <input id="f_owner" type="text" placeholder="Nama pemilik" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">Jenis Kendaraan</label>
-                  <input id="f_type" type="text" placeholder="Mobil/Motor/Truck" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">MASA BERLAKU STNK</label>
-                  <input id="f_stnk" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">MASA BERLAKU SIM C</label>
-                  <input id="f_simc" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">MASA BERLAKU SIM A</label>
-                  <input id="f_sima" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                </div>
-                <div>
-                  <label class="text-sm text-slate-300">Status</label>
-                  <select id="f_status" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                    <option value="active">Aktif</option>
-                    <option value="pending">Menunggu</option>
-                    <option value="expired">Kadaluarsa</option>
-                  </select>
-                </div>
-                <div class="md:col-span-2">
-                  <label class="text-sm text-slate-300">Catatan</label>
-                  <textarea id="f_notes" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700" placeholder="Keterangan tambahan"></textarea>
-                </div>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <button class="px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30" type="submit"><i class="fa-solid fa-check mr-2"></i>Simpan</button>
-                <button id="generateCodeBtn" class="px-4 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30" type="button"><i class="fa-solid fa-magic-wand-sparkles mr-2"></i>Generate Kode</button>
-                <button class="px-4 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600" type="reset"><i class="fa-solid fa-eraser mr-2"></i>Reset</button>
-              </div>
-              <p id="formMsg" class="text-sm text-slate-300"></p>
-            </form>
-
-            <div class="card p-5 rounded-xl space-y-3">
-              <h3 class="font-semibold">Pratinjau Kartu Permit</h3>
-              <div class="print-card" id="permitPreview">
-                <div class="flex items-center justify-between">
-                  <div class="text-xs">
-                    <div class="font-semibold">PERMIT KENDARAAN</div>
-                    <div class="text-slate-500">Akses Area Terbatas</div>
-                  </div>
-                  <div class="text-[10px] text-slate-500">Validasi</div>
-                </div>
-                <div class="hline"></div>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <div class="text-slate-500">Kode</div>
-                    <div id="pp_code" class="font-semibold">-</div>
-                  </div>
-                  <div>
-                    <div class="text-slate-500">Plat</div>
-                    <div id="pp_plate" class="font-semibold">-</div>
-                  </div>
-                  <div>
-                    <div class="text-slate-500">Pemilik</div>
-                    <div id="pp_owner" class="font-semibold truncate">-</div>
-                  </div>
-                  <div>
-                    <div class="text-slate-500">Jenis</div>
-                    <div id="pp_type" class="font-semibold">-</div>
-                  </div>
-                  <div class="col-span-2 grid grid-cols-2 gap-2">
-                    <div>
-                      <div class="text-slate-500">Masa Berlaku STNK</div>
-                      <div id="pp_stnk" class="font-semibold">-</div>
-                    </div>
-                    <div>
-                      <div class="text-slate-500">Masa Berlaku SIM C</div>
-                      <div id="pp_simc" class="font-semibold">-</div>
-                    </div>
-                    <div>
-                      <div class="text-slate-500">Masa Berlaku SIM A</div>
-                      <div id="pp_sima" class="font-semibold">-</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="hline"></div>
-                <div class="flex items-center justify-center">
-                  <svg id="pp_barcode"></svg>
-                </div>
-              </div>
-              <div class="flex gap-2">
-                <button id="printPreviewBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 w-full"><i class="fa-solid fa-print mr-2"></i>Cetak</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="scan" class="tab-section hidden fade-in">
-          <!-- Hardware Scanner Section -->
-          <div class="card p-5 rounded-xl space-y-4 mb-6">
-            <h3 class="font-semibold text-sky-300">
-              <i class="fa-solid fa-barcode mr-2"></i>Hardware Barcode Scanner
-            </h3>
-            <p class="text-slate-300">Gunakan USB/Bluetooth barcode scanner untuk scan yang lebih cepat dan akurat.</p>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-              <div>
-                <label class="text-sm text-slate-300 mb-2 block">Input Hardware Scanner:</label>
-                <div class="relative">
-                  <input 
-                    id="hardwareScannerInput" 
-                    type="text" 
-                    placeholder="Scan barcode dengan hardware scanner..." 
-                    class="w-full px-4 py-4 rounded-lg bg-slate-800/60 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-400/50 text-lg font-mono touch-feedback"
-                    autocomplete="off"
-                    autofocus
-                  >
-                  <div class="absolute right-4 top-1/2 -translate-y-1/2">
-                    <i class="fa-solid fa-barcode text-slate-400 text-xl"></i>
-                  </div>
-                </div>
-                <p class="text-xs text-slate-400 mt-2">
-                  <i class="fa-solid fa-info-circle mr-1"></i>
-                  Hubungkan USB/Bluetooth scanner ke komputer, lalu scan barcode. 
-                  Scanner akan otomatis focus ke input ini.
-                </p>
-              </div>
-              <div>
-                <label class="text-sm text-slate-300 mb-2 block">Status Scanner:</label>
-                <div class="flex items-center gap-2 mb-3">
-                  <div id="scannerStatus" class="w-3 h-3 rounded-full bg-slate-500 animate-pulse"></div>
-                  <span id="scannerStatusText" class="text-sm text-slate-400">Tidak terdeteksi</span>
-                </div>
-                <div class="space-y-2">
-                  <button id="testScannerBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30 text-sm touch-feedback w-full">
-                    <i class="fa-solid fa-vial mr-2"></i>Test Scanner
-                  </button>
-                  <button id="clearScannerBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600 text-sm touch-feedback w-full">
-                    <i class="fa-solid fa-eraser mr-2"></i>Clear Input
-                  </button>
-                </div>
-                <div class="mt-3 p-3 rounded-lg bg-slate-800/40 border border-slate-700">
-                  <h4 class="text-sm font-medium text-slate-300 mb-2">Cara Setup:</h4>
-                  <ol class="text-xs text-slate-400 space-y-1 list-decimal list-inside">
-                    <li>Hubungkan scanner via USB/Bluetooth</li>
-                    <li>Scanner otomatis terdeteksi sebagai keyboard</li>
-                    <li>Klik input field di atas</li>
-                    <li>Scan barcode - data langsung masuk</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="hline mb-6"></div>
-          
-          <div class="grid md:grid-cols-3 gap-6">
-            <div class="md:col-span-2 card p-4 rounded-xl">
-              <div class="flex flex-wrap items-center gap-3 mb-3">
-                <select id="cameraSelect" class="px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"></select>
-                <button id="startScanBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-play mr-2"></i>Mulai</button>
-                <button id="stopScanBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-stop mr-2"></i>Stop</button>
-                <label class="inline-flex items-center gap-2 ml-auto">
-                  <input id="autoLogToggle" type="checkbox" class="accent-sky-400">
-                  <span class="text-sm text-slate-300">Auto catat log</span>
-                </label>
-              </div>
-              <div class="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-900/50">
-                <video id="video" class="w-full h-[360px] bg-black object-cover" playsinline muted autoplay></video>
-                <div class="scanner-frame"></div>
-              </div>
-              <div id="scanMsg" class="mt-3 text-sm text-slate-300">Izinkan akses kamera untuk memulai pemindaian.</div>
-            </div>
-            <div class="card p-4 rounded-xl space-y-3">
-              <h3 class="font-semibold">Hasil Scan</h3>
-              <div class="text-sm text-slate-300">Kode Terbaca:</div>
-              <div id="scanCode" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900/50 font-mono">-</div>
-              <div class="text-sm text-slate-300">Detail:</div>
-              <div id="scanMatch">
-                <div class="rounded-lg border border-slate-700 bg-slate-900/50 p-3 text-sm">Belum ada.</div>
-              </div>
-              <div class="flex gap-2">
-                <button id="manualInBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30 w-full"><i class="fa-solid fa-door-open mr-2"></i>Catat IN</button>
-                <button id="manualOutBtn" class="px-3 py-2 rounded-lg bg-amber-500/20 border border-amber-400/30 hover:bg-amber-500/30 w-full"><i class="fa-solid fa-door-closed mr-2"></i>Catat OUT</button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="logs" class="tab-section hidden fade-in">
-          <div class="card p-5 rounded-xl space-y-4">
-            <div class="flex flex-col md:flex-row md:items-center gap-3">
-              <div class="flex-1 relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input id="searchLogInput" type="text" placeholder="Cari log: kode/plat/event..." class="w-full pl-10 pr-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              </div>
-              <button id="clearLogsBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-trash mr-2"></i>Bersihkan Log</button>
-            </div>
-            <div class="table-wrap">
-              <table class="min-w-full">
-                <thead>
-                  <tr>
-                    <th>Waktu</th>
-                    <th>Event</th>
-                    <th>Kode Permit</th>
-                    <th>Plat</th>
-                  </tr>
-                </thead>
-                <tbody id="logsTableBody" class="bg-slate-900/40"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <section id="import" class="tab-section hidden fade-in">
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="card p-5 rounded-xl space-y-3">
-              <h3 class="font-semibold">Impor dari Google Sheets (CSV)</h3>
-              <p class="text-sm text-slate-300">Publikasikan sheet Anda sebagai CSV: File → Share → Publish to web → Link → Entire document → CSV. Salin URL CSV dan tempel di bawah.</p>
-              <div class="flex gap-2">
-                <input id="csvUrlInput" type="url" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" class="flex-1 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-                <button id="loadCsvBtn" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-cloud-arrow-down mr-2"></i>Muat</button>
-              </div>
-              <div id="csvMsg" class="text-sm text-slate-300"></div>
-              <div class="rounded-xl overflow-hidden border border-slate-700 bg-slate-900/40">
-                <img
-                  src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2360737b-56a9-465a-a273-db1212f3245a.png"
-                  alt="Ilustrasi detail langkah demi langkah cara mempublikasikan Google Sheets menjadi file CSV, menyorot menu File, Share, Publish to web, memilih Entire document dan format CSV, gaya antarmuka minimalis"
-                  class="w-full h-40 object-cover"
-                  onerror="this.onerror=null; this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/5982ef22-8dee-4667-a6b7-83550e1c167b.png';"
-                />
-              </div>
-            </div>
-
-            <div class="card p-5 rounded-xl space-y-3">
-              <h3 class="font-semibold">Impor CSV Lokal</h3>
-              <input id="csvFileInput" type="file" accept=".csv,text/csv" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-              <div class="flex gap-2">
-                <button id="importCsvBtn" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-file-arrow-up mr-2"></i>Impor</button>
-                <button id="downloadCsvBtn" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-file-csv mr-2"></i>Ekspor CSV</button>
-              </div>
-              <p class="text-sm text-slate-300">Catatan: Kolom yang tidak ada akan diabaikan. Duplikasi permit_code akan dilewati.</p>
-            </div>
-          </div>
-          <div class="card p-5 rounded-xl mt-6 space-y-3">
-            <h3 class="font-semibold">Reset & Utilitas</h3>
-            <div class="flex flex-wrap gap-2">
-              <button id="seedDataBtn" class="px-3 py-2 rounded-lg bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/30"><i class="fa-solid fa-flask mr-2"></i>Isi Contoh Data</button>
-              <button id="resetDbBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-rotate-left mr-2"></i>Reset Database</button>
-            </div>
-          </div>
-        <div class="card p-5 rounded-xl space-y-3 mt-6">
-          <h3 class="font-semibold">Koneksi Supabase (Sinkronisasi Multi-Perangkat)</h3>
-          <p class="text-sm text-slate-300">Masukkan kredensial Supabase Anda. Data akan tersinkron otomatis antar perangkat.</p>
-          <div class="grid md:grid-cols-2 gap-3">
-            <div>
-              <label class="text-sm text-slate-300">Supabase URL</label>
-              <input id="sb_url" type="url" placeholder="https://xxxx.supabase.co" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300">Supabase ANON KEY</label>
-              <input id="sb_key" type="password" placeholder="eyJhbGci..." class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300">Email Admin</label>
-              <input id="sb_email" type="email" placeholder="afriadmin@email.com" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-            </div>
-            <div>
-              <label class="text-sm text-slate-300">Password</label>
-              <input id="sb_password" type="password" placeholder="••••••••" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
-            </div>
-          </div>
+        <div class="card p-5 rounded-xl mt-6 space-y-3">
+          <h3 class="font-semibold">Reset & Utilitas</h3>
           <div class="flex flex-wrap gap-2">
-            <button id="sb_connect" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-plug mr-2"></i>Simpan & Sambungkan</button>
-            <button id="sb_disconnect" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-link-slash mr-2"></i>Putuskan</button>
-            <button id="sb_sync_now" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Sync Sekarang</button>
-            <button id="sb_login" class="px-3 py-2 rounded-lg bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/30"><i class="fa-solid fa-right-to-bracket mr-2"></i>Login</button>
-            <button id="sb_logout" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
+            <button id="seedDataBtn" class="px-3 py-2 rounded-lg bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/30"><i class="fa-solid fa-flask mr-2"></i>Isi Contoh Data</button>
+            <button id="resetDbBtn" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-rotate-left mr-2"></i>Reset Database</button>
           </div>
-          <div id="sb_status" class="text-sm text-slate-400"></div>
         </div>
-        </section>
-      </main>
+      <div class="card p-5 rounded-xl space-y-3 mt-6">
+        <h3 class="font-semibold">Koneksi Supabase (Sinkronisasi Multi-Perangkat)</h3>
+        <p class="text-sm text-slate-300">Masukkan kredensial Supabase Anda. Data akan tersinkron otomatis antar perangkat.</p>
+        <div class="grid md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-sm text-slate-300">Supabase URL</label>
+            <input id="sb_url" type="url" placeholder="https://xxxx.supabase.co" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+          </div>
+          <div>
+            <label class="text-sm text-slate-300">Supabase ANON KEY</label>
+            <input id="sb_key" type="password" placeholder="eyJhbGci..." class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+          </div>
+          <div>
+            <label class="text-sm text-slate-300">Email Admin</label>
+            <input id="sb_email" type="email" placeholder="afriadmin@email.com" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+          </div>
+          <div>
+            <label class="text-sm text-slate-300">Password</label>
+            <input id="sb_password" type="password" placeholder="••••••••" class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700">
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="sb_connect" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-plug mr-2"></i>Simpan & Sambungkan</button>
+          <button id="sb_disconnect" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-link-slash mr-2"></i>Putuskan</button>
+          <button id="sb_sync_now" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Sync Sekarang</button>
+          <button id="sb_login" class="px-3 py-2 rounded-lg bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/30"><i class="fa-solid fa-right-to-bracket mr-2"></i>Login</button>
+          <button id="sb_logout" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
+        </div>
+        <div id="sb_status" class="text-sm text-slate-400"></div>
+      </div>
+      </section>
+    </main>
 
-      <section id="print-area" class="hidden"></section>
+    <section id="print-area" class="hidden"></section>
 
-      <footer class="max-w-7xl mx-auto px-4 py-10 text-center text-slate-500 text-sm">
-        Created By : Yanuar Afri 
-      </footer>
+    <footer class="max-w-7xl mx-auto px-4 py-10 text-center text-slate-500 text-sm">
+      Created By : Yanuar Afri 
+    </footer>
 
-      <script>
-        // Tailwind setup
-        tailwind.config = {
-          theme: {
-            extend: {
-              fontFamily: {
-                sans: ['Inter','system-ui','-apple-system','Segoe UI','Roboto','Ubuntu','Cantarell','Noto Sans','Helvetica Neue','Arial','sans-serif']
-              }
+    <script>
+      // Tailwind setup
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter','system-ui','-apple-system','Segoe UI','Roboto','Ubuntu','Cantarell','Noto Sans','Helvetica Neue','Arial','sans-serif']
             }
           }
+        }
+      };
+
+      // Global state
+      let SQL = null;
+      let db = null;
+      let supabaseClient = null;
+      let supabaseConnected = false;
+      let isAdmin = false;
+      let zxingReader = null;
+      let currentStream = null;
+      let preferredDeviceId = null;
+
+      const $ = (sel) => document.querySelector(sel);
+      const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+      // Utility: format date/time
+      const fmtDate = (d) => d ? new Date(d).toISOString().slice(0,10) : '';
+      const nowISO = () => new Date().toISOString();
+      const todayStr = () => new Date().toISOString().slice(0,10);
+
+      // Utility: debounce
+      const debounce = (fn, delay = 300) => {
+        let timeoutId;
+        return (...args) => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => fn(...args), delay);
         };
+      };
 
-        // Global state
-        let SQL = null;
-        let db = null;
-        let supabaseClient = null;
-        let supabaseConnected = false;
-        let isAdmin = false;
-        let zxingReader = null;
-        let currentStream = null;
-        let preferredDeviceId = null;
+      // Lightweight notifier
+      const notify = (message, tone = 'info') => {
+        const wrap = document.createElement('div');
+        wrap.style.position = 'fixed';
+        wrap.style.top = '12px';
+        wrap.style.right = '12px';
+        wrap.style.zIndex = '9999';
+        wrap.className = 'fade-in';
+        const color = tone === 'success' ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-100' : tone === 'error' ? 'bg-rose-500/20 border-rose-400/30 text-rose-100' : 'bg-sky-500/20 border-sky-400/30 text-sky-100';
+        wrap.innerHTML = `<div class="px-3 py-2 rounded-lg border ${color}">${message}</div>`;
+        document.body.appendChild(wrap);
+        setTimeout(() => wrap.remove(), 2200);
+      };
 
-        const $ = (sel) => document.querySelector(sel);
-        const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+      // Audio feedback
+      let audioCtx = null;
+      const ensureAudio = async () => {
+        try {
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          if (audioCtx.state === 'suspended') await audioCtx.resume();
+        } catch (_) {}
+      };
+      const playBeep = async (frequency = 1000, duration = 0.12) => {
+        await ensureAudio();
+        if (!audioCtx) return;
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(frequency, t);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+        osc.start(t);
+        osc.stop(t + duration);
+      };
 
-        // Utility: format date/time
-        const fmtDate = (d) => d ? new Date(d).toISOString().slice(0,10) : '';
-        const nowISO = () => new Date().toISOString();
-        const todayStr = () => new Date().toISOString().slice(0,10);
+      // Persistence
+      let permits = [];
+      let logsData = [];
 
-        // Utility: debounce
-        const debounce = (fn, delay = 300) => {
-          let timeoutId;
-          return (...args) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => fn(...args), delay);
-          };
-        };
+      const persist = () => {
+        try {
+          localStorage.setItem('permits', JSON.stringify(permits));
+          localStorage.setItem('logs', JSON.stringify(logsData));
+          notify('Data tersimpan ke browser', 'success');
+        } catch (e) {
+          notify('Gagal menyimpan ke browser', 'error');
+        }
+      };
+      const loadPersisted = () => {
+        try {
+          const p = localStorage.getItem('permits');
+          const l = localStorage.getItem('logs');
+          permits = p ? JSON.parse(p) : [];
+          logsData = l ? JSON.parse(l) : [];
+        } catch (e) {
+          permits = [];
+          logsData = [];
+        }
+      };
 
-        // Lightweight notifier
-        const notify = (message, tone = 'info') => {
-          const wrap = document.createElement('div');
-          wrap.style.position = 'fixed';
-          wrap.style.top = '12px';
-          wrap.style.right = '12px';
-          wrap.style.zIndex = '9999';
-          wrap.className = 'fade-in';
-          const color = tone === 'success' ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-100' : tone === 'error' ? 'bg-rose-500/20 border-rose-400/30 text-rose-100' : 'bg-sky-500/20 border-sky-400/30 text-sky-100';
-          wrap.innerHTML = `<div class="px-3 py-2 rounded-lg border ${color}">${message}</div>`;
-          document.body.appendChild(wrap);
-          setTimeout(() => wrap.remove(), 2200);
-        };
+      // Supabase helpers
+      const sbSetStatus = (text, tone='info') => {
+        const el = document.getElementById('sb_status');
+        if (!el) return;
+        el.textContent = text || '';
+      };
+      const sbSaveCreds = (url, key) => {
+        localStorage.setItem('sb_url', url);
+        localStorage.setItem('sb_key', key);
+      };
+      const sbLoadCreds = () => ({ url: localStorage.getItem('sb_url') || '', key: localStorage.getItem('sb_key') || '' });
+      const sbConnect = async () => {
+        const url = document.getElementById('sb_url').value.trim();
+        const key = document.getElementById('sb_key').value.trim();
+        if (!url || !key) { sbSetStatus('URL/KEY Supabase belum diisi'); return; }
+        try {
+          supabaseClient = window.supabase.createClient(url, key);
+          // simple ping
+          const { data, error } = await supabaseClient.from('permits').select('count', { count: 'exact', head: true });
+          if (error) throw error;
+          supabaseConnected = true;
+          sbSaveCreds(url, key);
+          sbSetStatus('Terhubung ke Supabase.');
+          notify('Supabase tersambung', 'success');
+        } catch (e) {
+          supabaseConnected = false;
+          sbSetStatus('Gagal terhubung: ' + (e.message || e));
+          notify('Gagal konek Supabase', 'error');
+        }
+      };
 
-        // Audio feedback
-        let audioCtx = null;
-        const ensureAudio = async () => {
-          try {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') await audioCtx.resume();
-          } catch (_) {}
-        };
-        const playBeep = async (frequency = 1000, duration = 0.12) => {
-          await ensureAudio();
-          if (!audioCtx) return;
-          const t = audioCtx.currentTime;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(frequency, t);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          gain.gain.setValueAtTime(0.0001, t);
-          gain.gain.exponentialRampToValueAtTime(0.12, t + 0.01);
-          gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
-          osc.start(t);
-          osc.stop(t + duration);
-        };
+      const sbLogin = async () => {
+        if (!supabaseConnected) { notify('Hubungkan Supabase dulu', 'error'); return; }
+        const email = document.getElementById('sb_email').value.trim();
+        const password = document.getElementById('sb_password').value.trim();
+        if (!email || !password) return notify('Email/Password kosong', 'error');
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) { notify('Login gagal', 'error'); sbSetStatus('Login gagal: ' + error.message); isAdmin = false; return; }
+        isAdmin = true;
+        notify('Login sukses (admin)', 'success');
+        sbSetStatus('Login sebagai admin: ' + email);
+        updateAdminLockUI();
+      };
+      const sbLogout = async () => {
+        if (!supabaseConnected) { isAdmin = false; updateAdminLockUI(); return; }
+        await supabaseClient.auth.signOut();
+        isAdmin = false;
+        notify('Logout', 'success');
+        sbSetStatus('Logout');
+        updateAdminLockUI();
+      };
 
-        // Persistence
-        let permits = [];
-        let logsData = [];
-
-        const persist = () => {
-          try {
-            localStorage.setItem('permits', JSON.stringify(permits));
-            localStorage.setItem('logs', JSON.stringify(logsData));
-            notify('Data tersimpan ke browser', 'success');
-          } catch (e) {
-            notify('Gagal menyimpan ke browser', 'error');
-          }
-        };
-        const loadPersisted = () => {
-          try {
-            const p = localStorage.getItem('permits');
-            const l = localStorage.getItem('logs');
-            permits = p ? JSON.parse(p) : [];
-            logsData = l ? JSON.parse(l) : [];
-          } catch (e) {
-            permits = [];
-            logsData = [];
-          }
-        };
-
-        // Supabase helpers
-        const sbSetStatus = (text, tone='info') => {
-          const el = document.getElementById('sb_status');
+      const updateAdminLockUI = () => {
+        const adminControls = [
+          '#newForm button[type="submit"]',
+          '#generateCodeBtn',
+          '#seedDataBtn',
+          '#resetDbBtn',
+          '#importCsvBtn',
+          '#loadCsvBtn'
+        ];
+        adminControls.forEach(sel => {
+          const el = document.querySelector(sel);
           if (!el) return;
-          el.textContent = text || '';
-        };
-        const sbSaveCreds = (url, key) => {
-          localStorage.setItem('sb_url', url);
-          localStorage.setItem('sb_key', key);
-        };
-        const sbLoadCreds = () => ({ url: localStorage.getItem('sb_url') || '', key: localStorage.getItem('sb_key') || '' });
-        const sbConnect = async () => {
-          const url = document.getElementById('sb_url').value.trim();
-          const key = document.getElementById('sb_key').value.trim();
-          if (!url || !key) { sbSetStatus('URL/KEY Supabase belum diisi'); return; }
-          try {
-            supabaseClient = window.supabase.createClient(url, key);
-            // simple ping
-            const { data, error } = await supabaseClient.from('permits').select('count', { count: 'exact', head: true });
-            if (error) throw error;
-            supabaseConnected = true;
-            sbSaveCreds(url, key);
-            sbSetStatus('Terhubung ke Supabase.');
-            notify('Supabase tersambung', 'success');
-          } catch (e) {
-            supabaseConnected = false;
-            sbSetStatus('Gagal terhubung: ' + (e.message || e));
-            notify('Gagal konek Supabase', 'error');
+          el.disabled = !isAdmin;
+          if (!isAdmin) {
+            el.classList.add('opacity-50','cursor-not-allowed');
+          } else {
+            el.classList.remove('opacity-50','cursor-not-allowed');
           }
-        };
+        });
+      };
 
-        const sbLogin = async () => {
-          if (!supabaseConnected) { notify('Hubungkan Supabase dulu', 'error'); return; }
-          const email = document.getElementById('sb_email').value.trim();
-          const password = document.getElementById('sb_password').value.trim();
-          if (!email || !password) return notify('Email/Password kosong', 'error');
-          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) { notify('Login gagal', 'error'); sbSetStatus('Login gagal: ' + error.message); isAdmin = false; return; }
-          isAdmin = true;
-          notify('Login sukses (admin)', 'success');
-          sbSetStatus('Login sebagai admin: ' + email);
-          updateAdminLockUI();
-        };
-        const sbLogout = async () => {
-          if (!supabaseConnected) { isAdmin = false; updateAdminLockUI(); return; }
-          await supabaseClient.auth.signOut();
-          isAdmin = false;
-          notify('Logout', 'success');
-          sbSetStatus('Logout');
-          updateAdminLockUI();
-        };
+      const sbEnsureTables = async () => {
+        // Require SQL migration set in project; we just assume tables exist.
+        // Provide DDL reference in comment:
+        // create table if not exists permits (
+        //   permit_code text primary key,
+        //   plate text,
+        //   owner text,
+        //   type text,
+        //   valid_from date,
+        //   valid_to date,
+        //   stnk_exp date,
+        //   simc_exp date,
+        //   sima_exp date,
+        //   status text,
+        //   notes text,
+        //   inserted_at timestamp with time zone default now()
+        // );
+        // create table if not exists logs (
+        //   id bigserial primary key,
+        //   ts timestamp with time zone default now(),
+        //   event text,
+        //   permit_code text,
+        //   plate text
+        // );
+      };
 
-        const updateAdminLockUI = () => {
-          const adminControls = [
-            '#newForm button[type="submit"]',
-            '#generateCodeBtn',
-            '#seedDataBtn',
-            '#resetDbBtn',
-            '#importCsvBtn',
-            '#loadCsvBtn'
-          ];
-          adminControls.forEach(sel => {
-            const el = document.querySelector(sel);
-            if (!el) return;
-            el.disabled = !isAdmin;
-            if (!isAdmin) {
-              el.classList.add('opacity-50','cursor-not-allowed');
-            } else {
-              el.classList.remove('opacity-50','cursor-not-allowed');
-            }
-          });
-        };
+      const sbPullAll = async () => {
+        if (!supabaseConnected) return;
+        const { data: d1, error: e1 } = await supabaseClient.from('permits').select('*');
+        if (e1) { notify('Gagal sync permits', 'error'); return; }
+        const { data: d2, error: e2 } = await supabaseClient.from('logs').select('*');
+        if (e2) { notify('Gagal sync logs', 'error'); return; }
+        permits = Array.isArray(d1) ? d1 : [];
+        logsData = Array.isArray(d2) ? d2 : [];
+        renderTable(); renderLogs(); renderStats(); renderSelectedInfo();
+      };
 
-        const sbEnsureTables = async () => {
-          // Require SQL migration set in project; we just assume tables exist.
-          // Provide DDL reference in comment:
-          // create table if not exists permits (
-          //   permit_code text primary key,
-          //   plate text,
-          //   owner text,
-          //   type text,
-          //   valid_from date,
-          //   valid_to date,
-          //   stnk_exp date,
-          //   simc_exp date,
-          //   sima_exp date,
-          //   status text,
-          //   notes text,
-          //   inserted_at timestamp with time zone default now()
-          // );
-          // create table if not exists logs (
-          //   id bigserial primary key,
-          //   ts timestamp with time zone default now(),
-          //   event text,
-          //   permit_code text,
-          //   plate text
-          // );
-        };
+      const sbUpsertPermit = async (p) => {
+        if (!supabaseConnected) return;
+        const payload = normalizePermitForDb(p);
+        const { error } = await supabaseClient.from('permits').upsert(payload, { onConflict: 'permit_code' });
+        if (error) notify('Gagal simpan ke Supabase: ' + error.message, 'error');
+      };
+      const sbDeletePermit = async (permit_code) => {
+        if (!supabaseConnected) return;
+        const { error } = await supabaseClient.from('permits').delete().eq('permit_code', permit_code);
+        if (error) notify('Gagal hapus di Supabase', 'error');
+      };
+      const sbInsertLog = async (l) => {
+        if (!supabaseConnected) return;
+        const { error } = await supabaseClient.from('logs').insert(l);
+        if (error) notify('Gagal simpan log', 'error');
+      };
 
-        const sbPullAll = async () => {
-          if (!supabaseConnected) return;
-          const { data: d1, error: e1 } = await supabaseClient.from('permits').select('*');
-          if (e1) { notify('Gagal sync permits', 'error'); return; }
-          const { data: d2, error: e2 } = await supabaseClient.from('logs').select('*');
-          if (e2) { notify('Gagal sync logs', 'error'); return; }
-          permits = Array.isArray(d1) ? d1 : [];
-          logsData = Array.isArray(d2) ? d2 : [];
-          renderTable(); renderLogs(); renderStats(); renderSelectedInfo();
-        };
+      // Normalize payloads before sending to Supabase (hindari kirim string kosong ke kolom DATE)
+      const toNullIfEmpty = (v) => (v === '' || v == null ? null : v);
+      const normalizePermitForDb = (p) => ({
+        permit_code: p.permit_code,
+        plate: p.plate || null,
+        owner: p.owner || null,
+        type: p.type || null,
+        valid_from: toNullIfEmpty(p.valid_from),
+        valid_to: toNullIfEmpty(p.valid_to),
+        stnk_exp: toNullIfEmpty(p.stnk_exp),
+        simc_exp: toNullIfEmpty(p.simc_exp),
+        sima_exp: toNullIfEmpty(p.sima_exp),
+        status: p.status || 'active',
+        notes: p.notes || null,
+      });
 
-        const sbUpsertPermit = async (p) => {
-          if (!supabaseConnected) return;
-          const { error } = await supabaseClient.from('permits').upsert(p, { onConflict: 'permit_code' });
-          if (error) notify('Gagal simpan ke Supabase', 'error');
-        };
-        const sbDeletePermit = async (permit_code) => {
-          if (!supabaseConnected) return;
-          const { error } = await supabaseClient.from('permits').delete().eq('permit_code', permit_code);
-          if (error) notify('Gagal hapus di Supabase', 'error');
-        };
-        const sbInsertLog = async (l) => {
-          if (!supabaseConnected) return;
-          const { error } = await supabaseClient.from('logs').insert(l);
-          if (error) notify('Gagal simpan log', 'error');
-        };
-
-        // CSV helpers
-        const parseCSV = (csvText) => {
-          const rows = [];
-          let cur = '', inQuotes = false, row = [];
-          for (let i = 0; i < csvText.length; i++) {
-            const ch = csvText[i];
-            const next = csvText[i + 1];
-            if (ch === '"') {
-              if (inQuotes && next === '"') { cur += '"'; i++; }
-              else { inQuotes = !inQuotes; }
-            } else if (ch === ',' && !inQuotes) {
-              row.push(cur); cur = '';
-            } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-              if (cur.length || row.length) { row.push(cur); rows.push(row); row = []; cur = ''; }
-            } else {
-              cur += ch;
-            }
+      // CSV helpers
+      const parseCSV = (csvText) => {
+        const rows = [];
+        let cur = '', inQuotes = false, row = [];
+        for (let i = 0; i < csvText.length; i++) {
+          const ch = csvText[i];
+          const next = csvText[i + 1];
+          if (ch === '"') {
+            if (inQuotes && next === '"') { cur += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+          } else if (ch === ',' && !inQuotes) {
+            row.push(cur); cur = '';
+          } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+            if (cur.length || row.length) { row.push(cur); rows.push(row); row = []; cur = ''; }
+          } else {
+            cur += ch;
           }
-          if (cur.length || row.length) { row.push(cur); rows.push(row); }
-          return rows.filter(r => r.length && r.some(c => c !== ''));
+        }
+        if (cur.length || row.length) { row.push(cur); rows.push(row); }
+        return rows.filter(r => r.length && r.some(c => c !== ''));
+      };
+      const toCSV = (items) => {
+        const headers = ['permit_code','plate','owner','type','valid_from','valid_to','stnk_exp','simc_exp','sima_exp','status','notes'];
+        const esc = (v) => {
+          if (v == null) return '';
+          const s = String(v);
+          return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
         };
-        const toCSV = (items) => {
-          const headers = ['permit_code','plate','owner','type','valid_from','valid_to','stnk_exp','simc_exp','sima_exp','status','notes'];
-          const esc = (v) => {
-            if (v == null) return '';
-            const s = String(v);
-            return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
-          };
-          const lines = [headers.join(',')];
-          for (const it of items) {
-            lines.push(headers.map(h => esc(it[h] ?? '')).join(','));
-          }
-          return lines.join('\n');
-        };
+        const lines = [headers.join(',')];
+        for (const it of items) {
+          lines.push(headers.map(h => esc(it[h] ?? '')).join(','));
+        }
+        return lines.join('\n');
+      };
 
-        // Date helpers
-        const isExpired = (permit) => {
-          // If any of the date fields clearly expired, treat as expired
-          const today = new Date(todayStr());
-          const dates = [permit.valid_to, permit.stnk_exp, permit.simc_exp, permit.sima_exp].filter(Boolean);
-          if (permit.status === 'expired') return true;
-          if (!dates.length) return false;
-          return dates.some(d => new Date(d) < today);
-        };
+      // Date helpers
+      const isExpired = (permit) => {
+        // If any of the date fields clearly expired, treat as expired
+        const today = new Date(todayStr());
+        const dates = [permit.valid_to, permit.stnk_exp, permit.simc_exp, permit.sima_exp].filter(Boolean);
+        if (permit.status === 'expired') return true;
+        if (!dates.length) return false;
+        return dates.some(d => new Date(d) < today);
+      };
 
-        // UI renderers
-        const renderStats = () => {
-          $('#statTotal').textContent = String(permits.length);
-          const active = permits.filter(p => !isExpired(p) && (p.status || 'active') === 'active').length;
-          const expired = permits.filter(p => isExpired(p)).length;
-          $('#statActive').textContent = String(active);
-          $('#statExpired').textContent = String(expired);
-          const today = todayStr();
-          const todayScans = logsData.filter(l => (l.ts || '').slice(0,10) === today).length;
-          $('#statTodayScans').textContent = String(todayScans);
-        };
+      // UI renderers
+      const renderStats = () => {
+        $('#statTotal').textContent = String(permits.length);
+        const active = permits.filter(p => !isExpired(p) && (p.status || 'active') === 'active').length;
+        const expired = permits.filter(p => isExpired(p)).length;
+        $('#statActive').textContent = String(active);
+        $('#statExpired').textContent = String(expired);
+        const today = todayStr();
+        const todayScans = logsData.filter(l => (l.ts || '').slice(0,10) === today).length;
+        $('#statTodayScans').textContent = String(todayScans);
+      };
 
-        let selectedPermitCode = null;
-        const renderSelectedInfo = () => {
-          const wrap = $('#selectedInfo');
-          if (!selectedPermitCode) { wrap.textContent = 'Pilih baris data untuk melihat detail.'; return; }
-          const p = permits.find(x => x.permit_code === selectedPermitCode);
-          if (!p) { wrap.textContent = 'Data tidak ditemukan.'; return; }
-          wrap.innerHTML = `
-            <div class="grid grid-cols-2 gap-2">
-              <div><div class="text-slate-500 text-xs">Kode</div><div class="font-semibold">${p.permit_code}</div></div>
-              <div><div class="text-slate-500 text-xs">Plat</div><div class="font-semibold">${p.plate || '-'}</div></div>
-              <div><div class="text-slate-500 text-xs">Pemilik</div><div class="font-semibold">${p.owner || '-'}</div></div>
-              <div><div class="text-slate-500 text-xs">Jenis</div><div class="font-semibold">${p.type || '-'}</div></div>
-              <div class="col-span-2 grid grid-cols-3 gap-2">
-                <div><div class="text-slate-500 text-xs">STNK</div><div class="font-semibold">${p.stnk_exp || '-'}</div></div>
-                <div><div class="text-slate-500 text-xs">SIM C</div><div class="font-semibold">${p.simc_exp || '-'}</div></div>
-                <div><div class="text-slate-500 text-xs">SIM A</div><div class="font-semibold">${p.sima_exp || '-'}</div></div>
-              </div>
-              <div><span class="badge ${isExpired(p) ? 'status-expired' : (p.status === 'pending' ? 'status-pending' : 'status-active')}">${isExpired(p) ? 'Kadaluarsa' : (p.status || 'active')}</span></div>
-            </div>`;
-          $('#barcodeText').value = p.permit_code || '';
-        };
+      let selectedPermitCode = null;
+      const renderSelectedInfo = () => {
+        const wrap = $('#selectedInfo');
+        if (!selectedPermitCode) { wrap.textContent = 'Pilih baris data untuk melihat detail.'; return; }
+        const p = permits.find(x => x.permit_code === selectedPermitCode);
+        if (!p) { wrap.textContent = 'Data tidak ditemukan.'; return; }
+        wrap.innerHTML = `
+          <div class="grid grid-cols-2 gap-2">
+            <div><div class="text-slate-500 text-xs">Kode</div><div class="font-semibold">${p.permit_code}</div></div>
+            <div><div class="text-slate-500 text-xs">Plat</div><div class="font-semibold">${p.plate || '-'}</div></div>
+            <div><div class="text-slate-500 text-xs">Pemilik</div><div class="font-semibold">${p.owner || '-'}</div></div>
+            <div><div class="text-slate-500 text-xs">Jenis</div><div class="font-semibold">${p.type || '-'}</div></div>
+            <div class="col-span-2 grid grid-cols-3 gap-2">
+              <div><div class="text-slate-500 text-xs">STNK</div><div class="font-semibold">${p.stnk_exp || '-'}</div></div>
+              <div><div class="text-slate-500 text-xs">SIM C</div><div class="font-semibold">${p.simc_exp || '-'}</div></div>
+              <div><div class="text-slate-500 text-xs">SIM A</div><div class="font-semibold">${p.sima_exp || '-'}</div></div>
+            </div>
+            <div><span class="badge ${isExpired(p) ? 'status-expired' : (p.status === 'pending' ? 'status-pending' : 'status-active')}">${isExpired(p) ? 'Kadaluarsa' : (p.status || 'active')}</span></div>
+          </div>`;
+        $('#barcodeText').value = p.permit_code || '';
+      };
 
-        const renderTable = () => {
-          const q = ($('#searchInput').value || '').toLowerCase().trim();
-          const st = $('#statusFilter').value;
-          const body = $('#dataTableBody');
-          body.innerHTML = '';
-          const rows = permits.filter(p => {
-            const matchQ = !q || [p.permit_code, p.plate, p.owner, p.type].some(v => (v || '').toLowerCase().includes(q));
-            const matchS = !st || (st === 'expired' ? isExpired(p) : (p.status || 'active') === st && !isExpired(p));
-            return matchQ && matchS;
-          });
-          for (const p of rows) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td class="font-mono">${p.permit_code || '-'}</td>
-              <td>${p.plate || '-'}</td>
-              <td>${p.owner || '-'}</td>
-              <td>${p.type || '-'}</td>
-              <td>${(p.stnk_exp || p.valid_from || '-') + ' — ' + (p.sima_exp || p.valid_to || '-')}</td>
-              <td>${isExpired(p) ? '<span class="badge status-expired">expired</span>' : p.status === 'pending' ? '<span class="badge status-pending">pending</span>' : '<span class="badge status-active">active</span>'}</td>
-              <td class="space-x-2">
-                <button class="px-2 py-1 rounded bg-sky-500/20 border border-sky-400/30 sel">Pilih</button>
-                <button class="px-2 py-1 rounded bg-rose-500/20 border border-rose-400/30 del">Hapus</button>
-              </td>`;
+      const renderTable = () => {
+        const q = ($('#searchInput').value || '').toLowerCase().trim();
+        const st = $('#statusFilter').value;
+        const body = $('#dataTableBody');
+        body.innerHTML = '';
+        const rows = permits.filter(p => {
+          const matchQ = !q || [p.permit_code, p.plate, p.owner, p.type].some(v => (v || '').toLowerCase().includes(q));
+          const matchS = !st || (st === 'expired' ? isExpired(p) : (p.status || 'active') === st && !isExpired(p));
+          return matchQ && matchS;
+        });
+        for (const p of rows) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="font-mono">${p.permit_code || '-'}</td>
+            <td>${p.plate || '-'}</td>
+            <td>${p.owner || '-'}</td>
+            <td>${p.type || '-'}</td>
+            <td>${(p.stnk_exp || p.valid_from || '-') + ' — ' + (p.sima_exp || p.valid_to || '-')}</td>
+            <td>${isExpired(p) ? '<span class="badge status-expired">expired</span>' : p.status === 'pending' ? '<span class="badge status-pending">pending</span>' : '<span class="badge status-active">active</span>'}</td>
+            <td class="space-x-2">
+              <button class="px-2 py-1 rounded bg-sky-500/20 border border-sky-400/30 sel">Pilih</button>
+              <button class="px-2 py-1 rounded bg-rose-500/20 border border-rose-400/30 del">Hapus</button>
+            </td>`;
           tr.querySelector('.sel').addEventListener('click', () => { selectedPermitCode = p.permit_code; renderSelectedInfo(); notify('Dipilih: ' + (p.permit_code || '')); });
           tr.querySelector('.del').addEventListener('click', async () => {
             if (!confirm('Hapus permit ini?')) return;
@@ -1000,419 +1017,375 @@
           }
         };
 
-        const renderLogs = () => {
-          const q = ($('#searchLogInput').value || '').toLowerCase().trim();
-          const body = $('#logsTableBody');
-          body.innerHTML = '';
-          const rows = logsData
-            .slice()
-            .sort((a,b) => (b.ts || '').localeCompare(a.ts || ''))
-            .filter(l => !q || [l.ts, l.event, l.permit_code, l.plate].some(v => (v || '').toLowerCase().includes(q)));
-          for (const l of rows) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td>${l.ts ? l.ts.replace('T',' ').slice(0,19) : '-'}</td>
-              <td>${l.event || '-'}</td>
-              <td class="font-mono">${l.permit_code || '-'}</td>
-              <td>${l.plate || '-'}</td>`;
-            body.appendChild(tr);
+      const renderLogs = () => {
+        const q = ($('#searchLogInput').value || '').toLowerCase().trim();
+        const body = $('#logsTableBody');
+        body.innerHTML = '';
+        const rows = logsData
+          .slice()
+          .sort((a,b) => (b.ts || '').localeCompare(a.ts || ''))
+          .filter(l => !q || [l.ts, l.event, l.permit_code, l.plate].some(v => (v || '').toLowerCase().includes(q)));
+        for (const l of rows) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${l.ts ? l.ts.replace('T',' ').slice(0,19) : '-'}</td>
+            <td>${l.event || '-'}</td>
+            <td class="font-mono">${l.permit_code || '-'}</td>
+            <td>${l.plate || '-'}</td>`;
+          body.appendChild(tr);
+        }
+      };
+
+      // Barcode utilities
+    const renderBarcodeTo = (selector, text) => {
+        const svg = $(selector);
+        svg.innerHTML = '';
+        if (!text) return;
+        try {
+        // Set high-contrast background for better scanning
+        svg.setAttribute('style', 'background:#ffffff');
+        JsBarcode(svg, text, { 
+          format: 'CODE128',
+          displayValue: true,
+          fontSize: 16,
+          lineColor: '#000000',
+          background: '#ffffff',
+          width: 3,
+          height: 100,
+          margin: 8,
+          textMargin: 6
+        });
+        } catch (e) {
+          notify('Gagal generate barcode', 'error');
+        }
+      };
+
+      const downloadSVG = (selector, filename) => {
+        const el = $(selector);
+        if (!el) return;
+        const svgText = el.outerHTML;
+        const blob = new Blob([svgText], { type: 'image/svg+xml' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      };
+
+      const printNode = (node) => {
+        const area = $('#print-area');
+        area.classList.remove('hidden');
+        area.innerHTML = '';
+        area.appendChild(node.cloneNode(true));
+        window.print();
+        setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
+      };
+
+      // Tabs
+      const setupTabs = () => {
+        const tabs = $$('.tab-btn');
+        const sections = $$('.tab-section');
+        const activate = (name) => {
+          for (const b of tabs) {
+            if (b.dataset.tab === name) b.classList.add('tab-active'); else b.classList.remove('tab-active');
+          }
+          for (const s of sections) {
+            if (s.id === name) s.classList.remove('hidden'); else s.classList.add('hidden');
           }
         };
+        for (const b of tabs) b.addEventListener('click', () => activate(b.dataset.tab));
+        activate('dashboard');
+      };
 
-        // Barcode utilities
-      const renderBarcodeTo = (selector, text) => {
-          const svg = $(selector);
-          svg.innerHTML = '';
-          if (!text) return;
+      // Camera & scanning
+      const populateCameras = async () => {
+        try {
+          // Ensure permission prompt to reveal device labels on iOS/Safari
           try {
-          // Set high-contrast background for better scanning
-          svg.setAttribute('style', 'background:#ffffff');
-          JsBarcode(svg, text, { 
-            format: 'CODE128',
-            displayValue: true,
-            fontSize: 16,
-            lineColor: '#000000',
-            background: '#ffffff',
-            width: 3,
-            height: 100,
-            margin: 8,
-            textMargin: 6
-          });
-          } catch (e) {
-            notify('Gagal generate barcode', 'error');
-          }
-        };
+            await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          } catch(_) {}
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const videos = devices.filter(d => d.kind === 'videoinput');
+          const sel = $('#cameraSelect');
+          sel.innerHTML = '';
+          // Find back camera by label
+          const sorted = videos.slice().sort((a,b) => (/(back|rear|environment)/i.test(b.label) ? 1 : 0) - (/(back|rear|environment)/i.test(a.label) ? 1 : 0));
+          preferredDeviceId = sorted[0]?.deviceId || videos[0]?.deviceId || null;
+          // Hide selector to enforce back-camera only
+          sel.classList.add('hidden');
+          if (!videos.length) $('#scanMsg').textContent = 'Kamera tidak ditemukan.';
+        } catch (e) {
+          $('#scanMsg').textContent = 'Tidak bisa mengakses daftar perangkat kamera.';
+        }
+      };
 
-        const downloadSVG = (selector, filename) => {
-          const el = $(selector);
-          if (!el) return;
-          const svgText = el.outerHTML;
-          const blob = new Blob([svgText], { type: 'image/svg+xml' });
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-        };
+      const startScan = async () => {
+        try {
+          $('#scanMsg').textContent = 'Memulai kamera...';
+          if (!zxingReader) zxingReader = new ZXing.BrowserMultiFormatReader();
+          // Select CODE_128 with TRY_HARDER
+          const hints = new Map();
+          hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128]);
+          hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+          hints.set(ZXing.DecodeHintType.CHARACTER_SET, 'utf-8');
+          zxingReader.defaultOptions = { hints, delayBetweenScanAttempts: 50, delayBetweenScanSuccess: 500 };
 
-        const printNode = (node) => {
-          const area = $('#print-area');
-          area.classList.remove('hidden');
-          area.innerHTML = '';
-          area.appendChild(node.cloneNode(true));
-          window.print();
-          setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
-        };
+          // Stop previous stream if any
+          try { if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; } } catch(_) {}
 
-        // Tabs
-        const setupTabs = () => {
-          const tabs = $$('.tab-btn');
-          const sections = $$('.tab-section');
-          const activate = (name) => {
-            for (const b of tabs) {
-              if (b.dataset.tab === name) b.classList.add('tab-active'); else b.classList.remove('tab-active');
-            }
-            for (const s of sections) {
-              if (s.id === name) s.classList.remove('hidden'); else s.classList.add('hidden');
-            }
-          };
-          for (const b of tabs) b.addEventListener('click', () => activate(b.dataset.tab));
-          activate('dashboard');
-        };
-
-        // Camera & scanning
-        const populateCameras = async () => {
+          const selId = preferredDeviceId || undefined;
+          // Enforce back camera only
+          const constraints = selId ? { video: { deviceId: { exact: selId } } } : { video: { facingMode: { exact: 'environment' } } };
           try {
-            // Ensure permission prompt to reveal device labels on iOS/Safari
-            try {
-              await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            } catch(_) {}
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const videos = devices.filter(d => d.kind === 'videoinput');
-            const sel = $('#cameraSelect');
-            sel.innerHTML = '';
-            // Find back camera by label
-            const sorted = videos.slice().sort((a,b) => (/(back|rear|environment)/i.test(b.label) ? 1 : 0) - (/(back|rear|environment)/i.test(a.label) ? 1 : 0));
-            preferredDeviceId = sorted[0]?.deviceId || videos[0]?.deviceId || null;
-            // Hide selector to enforce back-camera only
-            sel.classList.add('hidden');
-            if (!videos.length) $('#scanMsg').textContent = 'Kamera tidak ditemukan.';
-          } catch (e) {
-            $('#scanMsg').textContent = 'Tidak bisa mengakses daftar perangkat kamera.';
-          }
-        };
-
-        const startScan = async () => {
-          try {
-            $('#scanMsg').textContent = 'Memulai kamera...';
-            if (!zxingReader) zxingReader = new ZXing.BrowserMultiFormatReader();
-            // Select CODE_128 with TRY_HARDER
-            const hints = new Map();
-            hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.CODE_128]);
-            hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-            hints.set(ZXing.DecodeHintType.CHARACTER_SET, 'utf-8');
-            zxingReader.defaultOptions = { hints, delayBetweenScanAttempts: 50, delayBetweenScanSuccess: 500 };
-
-            // Stop previous stream if any
-            try { if (currentStream) { currentStream.getTracks().forEach(t => t.stop()); currentStream = null; } } catch(_) {}
-
-            const selId = preferredDeviceId || undefined;
-            // Enforce back camera only
-            const constraints = selId ? { video: { deviceId: { exact: selId } } } : { video: { facingMode: { exact: 'environment' } } };
-            try {
-              const stream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                  ...(constraints.video || {}),
-                  focusMode: 'continuous',
-                  advanced: [
-                    { torch: false },
-                    { zoom: 2 }
-                  ]
-                }
-              });
-              const video = document.getElementById('video');
-              video.srcObject = stream;
-              await video.play();
-              currentStream = stream;
-            } catch (_) {
-              // ignore; fallback to ZXing binding
-            }
-
-            await zxingReader.decodeFromVideoDevice(selId, 'video', (result, err) => {
-              if (result) {
-                const text = result.getText();
-                $('#scanCode').textContent = text;
-                const match = permits.find(p => p.permit_code === text);
-                if (match) {
-                  $('#scanMatch').innerHTML = `
-                    <div class="print-card bg-white text-slate-900" style="zoom:.9">
-                      <div class="flex items-center justify-between">
-                        <div class="text-xs">
-                          <div class="font-semibold">PERMIT KENDARAAN</div>
-                          <div class="text-slate-500">Akses Area Terbatas</div>
-                        </div>
-                        <div class="text-[10px] text-slate-500">Validasi</div>
-                      </div>
-                      <div class="hline"></div>
-                      <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
-                        <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
-                        <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
-                        <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
-                        <div class="col-span-2 grid grid-cols-3 gap-2">
-                          <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
-                          <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
-                          <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
-                        </div>
-                      </div>
-                      <div class="hline"></div>
-                      <div class="flex items-center justify-center"><svg id="scan_barcode_preview"></svg></div>
-                    </div>`;
-                  try { JsBarcode(document.getElementById('scan_barcode_preview'), match.permit_code, { format: 'CODE128', displayValue: true, fontSize: 10, height: 50, margin: 4 }); } catch(_) {}
-                  // Beep on successful read
-                  playBeep(1200, 0.1);
-                if ($('#autoLogToggle').checked) {
-                  const logObj = { ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' };
-                  logsData.push(logObj);
-                  persist(); renderLogs(); renderStats();
-                  sbInsertLog(logObj);
-                }
-                } else {
-                  $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
-                }
-              } else if (err && !(err instanceof ZXing.NotFoundException)) {
-                // Sorot error selain tidak ditemukan agar user tahu ada kendala
-                $('#scanMsg').textContent = 'Kesulitan membaca. Coba dekatkan, atur fokus, atau perbesar barcode.';
+            const stream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                ...(constraints.video || {}),
+                focusMode: 'continuous',
+                advanced: [
+                  { torch: false },
+                  { zoom: 2 }
+                ]
               }
             });
-            $('#scanMsg').textContent = 'Pemindaian aktif.';
-          } catch (e) {
-            $('#scanMsg').textContent = 'Gagal memulai pemindaian.';
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            await video.play();
+            currentStream = stream;
+          } catch (_) {
+            // ignore; fallback to ZXing binding
           }
-        };
-      const stopScan = () => {
-          try {
-            if (zxingReader) zxingReader.reset();
-            $('#scanMsg').textContent = 'Pemindaian dihentikan.';
-          const video = document.getElementById('video');
-          if (video && video.srcObject) {
-            try { video.srcObject.getTracks().forEach(t => t.stop()); } catch(_) {}
-            video.srcObject = null;
-          }
-          if (currentStream) { try { currentStream.getTracks().forEach(t => t.stop()); } catch(_) {} currentStream = null; }
-          } catch (e) {
-            // ignore
-          }
-        };
 
-        // Form & preview
-        const updatePreview = () => {
-          $('#pp_code').textContent = $('#f_permit_code').value || '-';
-          $('#pp_plate').textContent = $('#f_plate').value || '-';
-          $('#pp_owner').textContent = $('#f_owner').value || '-';
-          $('#pp_type').textContent = $('#f_type').value || '-';
-          const stnk = $('#f_stnk')?.value || $('#f_from')?.value || '-';
-          const simc = $('#f_simc')?.value || '-';
-          const sima = $('#f_sima')?.value || $('#f_to')?.value || '-';
-          const sSTNK = $('#pp_stnk'); const sSIMC = $('#pp_simc'); const sSIMA = $('#pp_sima');
-          if (sSTNK) sSTNK.textContent = stnk;
-          if (sSIMC) sSIMC.textContent = simc;
-          if (sSIMA) sSIMA.textContent = sima;
-          renderBarcodeTo('#pp_barcode', $('#f_permit_code').value || $('#f_plate').value || '');
-        };
-
-        const genCode = () => {
-          const s = Math.random().toString(36).slice(2, 6).toUpperCase();
-          const d = new Date();
-          return `PRM-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${s}`;
-        };
-
-        // Event bindings
-        const bindEvents = () => {
-          // Header actions
-          $('#saveDbBtn').addEventListener('click', () => persist());
-          $('#exportDbBtn').addEventListener('click', () => {
-            const data = { permits, logs: logsData };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `permit-db-${Date.now()}.json`;
-            document.body.appendChild(a); a.click(); a.remove();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-          });
-
-          // Data filters
-          $('#searchInput').addEventListener('input', debounce(renderTable, 200));
-          $('#statusFilter').addEventListener('change', renderTable);
-          $('#refreshTableBtn').addEventListener('click', () => { renderTable(); notify('Tabel diperbarui'); });
-
-          // Barcode tools
-          $('#generateBarcodeBtn').addEventListener('click', () => {
-            const txt = $('#barcodeText').value.trim();
-            if (!txt) return notify('Isi teks/kode terlebih dahulu', 'error');
-            renderBarcodeTo('#barcodeSvg', txt);
-          });
-          $('#downloadBarcodeBtn').addEventListener('click', () => downloadSVG('#barcodeSvg', 'barcode.svg'));
-        $('#printCardBtn').addEventListener('click', () => {
-            const code = $('#barcodeText').value.trim();
-            if (!code) return notify('Tidak ada kode untuk dicetak', 'error');
-            const card = document.createElement('div');
-            card.className = 'print-card';
-            card.innerHTML = `
-              <div class="flex items-center justify-between">
-                <div class="text-xs"><div class="font-semibold">PERMIT KENDARAAN</div><div class="text-slate-500">Akses Area Terbatas</div></div>
-                <div class="text-[10px] text-slate-500">Validasi</div>
-              </div>
-              <div class="hline"></div>
-            <div class="grid grid-cols-2 gap-2 text-xs">
-              <div><div class="text-slate-500">Kode</div><div class="font-semibold">${code}</div></div>
-              <div><div class="text-slate-500">Tanggal</div><div class="font-semibold">${todayStr()}</div></div>
-              <div class="col-span-2 grid grid-cols-3 gap-2">
-                <div><div class="text-slate-500">STNK</div><div class="font-semibold">${$('#f_stnk')?.value || '-'}</div></div>
-                <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${$('#f_simc')?.value || '-'}</div></div>
-                <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${$('#f_sima')?.value || '-'}</div></div>
-              </div>
-              </div>
-              <div class="hline"></div>
-              <div class="flex items-center justify-center"><svg id="tmp_bar"></svg></div>`;
-            JsBarcode(card.querySelector('#tmp_bar'), code, { format: 'CODE128', displayValue: true, fontSize: 14, height: 60, margin: 6 });
-            printNode(card);
-          });
-
-          // New form
-          $('#generateCodeBtn').addEventListener('click', () => { $('#f_permit_code').value = genCode(); updatePreview(); });
-          $$('#newForm input, #newForm select, #newForm textarea').forEach(el => el.addEventListener('input', debounce(updatePreview, 50)));
-          $('#newForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            if (!isAdmin) { notify('Hanya admin yang bisa menambahkan', 'error'); return; }
-            const data = {
-              permit_code: $('#f_permit_code').value.trim() || genCode(),
-              plate: $('#f_plate').value.trim(),
-              owner: $('#f_owner').value.trim(),
-              type: $('#f_type').value.trim(),
-              valid_from: $('#f_stnk')?.value || $('#f_from')?.value || '',
-              valid_to: $('#f_sima')?.value || $('#f_to')?.value || '',
-              stnk_exp: $('#f_stnk')?.value || '',
-              simc_exp: $('#f_simc')?.value || '',
-              sima_exp: $('#f_sima')?.value || '',
-              status: $('#f_status').value || 'active',
-              notes: $('#f_notes').value.trim(),
-            };
-            if (!data.plate) { $('#formMsg').textContent = 'Plat wajib diisi.'; return; }
-            if (permits.some(p => p.permit_code === data.permit_code)) {
-              data.permit_code = genCode();
+          await zxingReader.decodeFromVideoDevice(selId, 'video', (result, err) => {
+            if (result) {
+              const text = result.getText();
+              $('#scanCode').textContent = text;
+              const match = permits.find(p => p.permit_code === text);
+              if (match) {
+                $('#scanMatch').innerHTML = `
+                  <div class="print-card bg-white text-slate-900" style="zoom:.9">
+                    <div class="flex items-center justify-between">
+                      <div class="text-xs">
+                        <div class="font-semibold">PERMIT KENDARAAN</div>
+                        <div class="text-slate-500">Akses Area Terbatas</div>
+                      </div>
+                      <div class="text-[10px] text-slate-500">Validasi</div>
+                    </div>
+                    <div class="hline"></div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                      <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
+                      <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
+                      <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
+                      <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
+                      <div class="col-span-2 grid grid-cols-3 gap-2">
+                        <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
+                        <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
+                        <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
+                      </div>
+                    </div>
+                    <div class="hline"></div>
+                    <div class="flex items-center justify-center"><svg id="scan_barcode_preview"></svg></div>
+                  </div>`;
+                try { JsBarcode(document.getElementById('scan_barcode_preview'), match.permit_code, { format: 'CODE128', displayValue: true, fontSize: 10, height: 50, margin: 4 }); } catch(_) {}
+                // Beep on successful read
+                playBeep(1200, 0.1);
+              if ($('#autoLogToggle').checked) {
+                const logObj = { ts: nowISO(), event: 'SCAN', permit_code: match.permit_code, plate: match.plate || '' };
+                logsData.push(logObj);
+                persist(); renderLogs(); renderStats();
+                sbInsertLog(logObj);
+              }
+              } else {
+                $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
+              }
+            } else if (err && !(err instanceof ZXing.NotFoundException)) {
+              // Sorot error selain tidak ditemukan agar user tahu ada kendala
+              $('#scanMsg').textContent = 'Kesulitan membaca. Coba dekatkan, atur fokus, atau perbesar barcode.';
             }
+          });
+          $('#scanMsg').textContent = 'Pemindaian aktif.';
+        } catch (e) {
+          $('#scanMsg').textContent = 'Gagal memulai pemindaian.';
+        }
+      };
+    const stopScan = () => {
+        try {
+          if (zxingReader) zxingReader.reset();
+          $('#scanMsg').textContent = 'Pemindaian dihentikan.';
+        const video = document.getElementById('video');
+        if (video && video.srcObject) {
+          try { video.srcObject.getTracks().forEach(t => t.stop()); } catch(_) {}
+          video.srcObject = null;
+        }
+        if (currentStream) { try { currentStream.getTracks().forEach(t => t.stop()); } catch(_) {} currentStream = null; }
+        } catch (e) {
+          // ignore
+        }
+      };
+
+      // Form & preview
+      const updatePreview = () => {
+        $('#pp_code').textContent = $('#f_permit_code').value || '-';
+        $('#pp_plate').textContent = $('#f_plate').value || '-';
+        $('#pp_owner').textContent = $('#f_owner').value || '-';
+        $('#pp_type').textContent = $('#f_type').value || '-';
+        const stnk = $('#f_stnk')?.value || $('#f_from')?.value || '-';
+        const simc = $('#f_simc')?.value || '-';
+        const sima = $('#f_sima')?.value || $('#f_to')?.value || '-';
+        const sSTNK = $('#pp_stnk'); const sSIMC = $('#pp_simc'); const sSIMA = $('#pp_sima');
+        if (sSTNK) sSTNK.textContent = stnk;
+        if (sSIMC) sSIMC.textContent = simc;
+        if (sSIMA) sSIMA.textContent = sima;
+        renderBarcodeTo('#pp_barcode', $('#f_permit_code').value || $('#f_plate').value || '');
+      };
+
+      const genCode = () => {
+        const s = Math.random().toString(36).slice(2, 6).toUpperCase();
+        const d = new Date();
+        return `PRM-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${s}`;
+      };
+
+      // Event bindings
+      const bindEvents = () => {
+        // Header actions
+        $('#saveDbBtn').addEventListener('click', () => persist());
+        $('#exportDbBtn').addEventListener('click', () => {
+          const data = { permits, logs: logsData };
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `permit-db-${Date.now()}.json`;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+
+        // Data filters
+        $('#searchInput').addEventListener('input', debounce(renderTable, 200));
+        $('#statusFilter').addEventListener('change', renderTable);
+        $('#refreshTableBtn').addEventListener('click', () => { renderTable(); notify('Tabel diperbarui'); });
+
+        // Barcode tools
+        $('#generateBarcodeBtn').addEventListener('click', () => {
+          const txt = $('#barcodeText').value.trim();
+          if (!txt) return notify('Isi teks/kode terlebih dahulu', 'error');
+          renderBarcodeTo('#barcodeSvg', txt);
+        });
+        $('#downloadBarcodeBtn').addEventListener('click', () => downloadSVG('#barcodeSvg', 'barcode.svg'));
+      $('#printCardBtn').addEventListener('click', () => {
+          const code = $('#barcodeText').value.trim();
+          if (!code) return notify('Tidak ada kode untuk dicetak', 'error');
+          const card = document.createElement('div');
+          card.className = 'print-card';
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="text-xs"><div class="font-semibold">PERMIT KENDARAAN</div><div class="text-slate-500">Akses Area Terbatas</div></div>
+              <div class="text-[10px] text-slate-500">Validasi</div>
+            </div>
+            <div class="hline"></div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div><div class="text-slate-500">Kode</div><div class="font-semibold">${code}</div></div>
+            <div><div class="text-slate-500">Tanggal</div><div class="font-semibold">${todayStr()}</div></div>
+            <div class="col-span-2 grid grid-cols-3 gap-2">
+              <div><div class="text-slate-500">STNK</div><div class="font-semibold">${$('#f_stnk')?.value || '-'}</div></div>
+              <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${$('#f_simc')?.value || '-'}</div></div>
+              <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${$('#f_sima')?.value || '-'}</div></div>
+            </div>
+            </div>
+            <div class="hline"></div>
+            <div class="flex items-center justify-center"><svg id="tmp_bar"></svg></div>`;
+          JsBarcode(card.querySelector('#tmp_bar'), code, { format: 'CODE128', displayValue: true, fontSize: 14, height: 60, margin: 6 });
+          printNode(card);
+        });
+
+        // New form
+        $('#generateCodeBtn').addEventListener('click', () => { $('#f_permit_code').value = genCode(); updatePreview(); });
+        $$('#newForm input, #newForm select, #newForm textarea').forEach(el => el.addEventListener('input', debounce(updatePreview, 50)));
+        $('#newForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (!isAdmin) { $('#formMsg').textContent = 'Hanya admin yang bisa menambahkan'; notify('Hanya admin yang bisa menambahkan', 'error'); return; }
+          const data = {
+            permit_code: $('#f_permit_code').value.trim() || genCode(),
+            plate: $('#f_plate').value.trim(),
+            owner: $('#f_owner').value.trim(),
+            type: $('#f_type').value.trim(),
+            valid_from: $('#f_stnk')?.value || $('#f_from')?.value || '',
+            valid_to: $('#f_sima')?.value || $('#f_to')?.value || '',
+            stnk_exp: $('#f_stnk')?.value || '',
+            simc_exp: $('#f_simc')?.value || '',
+            sima_exp: $('#f_sima')?.value || '',
+            status: $('#f_status').value || 'active',
+            notes: $('#f_notes').value.trim(),
+          };
+          if (!data.plate) { $('#formMsg').textContent = 'Plat wajib diisi.'; return; }
+          if (permits.some(p => p.permit_code === data.permit_code)) {
+            data.permit_code = genCode();
+          }
           permits.push(data);
           persist();
-          sbUpsertPermit(data);
-            $('#formMsg').textContent = 'Tersimpan.';
-            selectedPermitCode = data.permit_code;
-            updatePreview(); renderTable(); renderSelectedInfo(); renderStats();
-            try { (e.target).reset(); } catch {}
-          });
-          $('#printPreviewBtn').addEventListener('click', () => printNode($('#permitPreview')));
-
-          // Scan controls
-          $('#startScanBtn').addEventListener('click', startScan);
-          $('#stopScanBtn').addEventListener('click', stopScan);
-          $('#manualInBtn').addEventListener('click', () => {
-            const code = $('#scanCode').textContent.trim();
-            if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
-            const match = permits.find(p => p.permit_code === code);
-          const logObj = { ts: nowISO(), event: 'IN', permit_code: code, plate: match?.plate || '' };
-          logsData.push(logObj);
-          persist(); renderLogs(); renderStats(); notify('Dicatat IN', 'success');
-          sbInsertLog(logObj);
-          playBeep(1000, 0.08);
-          });
-          $('#manualOutBtn').addEventListener('click', () => {
-            const code = $('#scanCode').textContent.trim();
-            if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
-            const match = permits.find(p => p.permit_code === code);
-          const logObj = { ts: nowISO(), event: 'OUT', permit_code: code, plate: match?.plate || '' };
-          logsData.push(logObj);
-          persist(); renderLogs(); renderStats(); notify('Dicatat OUT', 'success');
-          sbInsertLog(logObj);
-          playBeep(800, 0.08);
-          });
-
-          // Logs
-          $('#searchLogInput').addEventListener('input', debounce(renderLogs, 200));
-          $('#clearLogsBtn').addEventListener('click', async () => { 
-            if (confirm('Hapus semua log?')) { 
-              logsData = []; persist(); renderLogs(); renderStats();
-              if (supabaseConnected) {
-                const { error } = await supabaseClient.from('logs').delete().neq('id', -1);
-                if (error) notify('Gagal bersihkan log di Supabase', 'error');
-              }
-            }
-          });
-
-          // Import from URL
-          $('#loadCsvBtn').addEventListener('click', async () => {
-            if (!isAdmin) { $('#csvMsg').textContent = 'Hanya admin yang bisa impor.'; return; }
-            const url = $('#csvUrlInput').value.trim();
-            if (!url) return ($('#csvMsg').textContent = 'Masukkan URL CSV terlebih dahulu.');
-            $('#csvMsg').textContent = 'Mengunduh...';
+          // Try save to Supabase (async)
+          (async () => {
             try {
-              const res = await fetch(url);
-              if (!res.ok) throw new Error('HTTP ' + res.status);
-              const text = await res.text();
-              const rows = parseCSV(text);
-              if (!rows.length) throw new Error('CSV kosong');
-              const headers = rows[0].map(h => h.trim().toLowerCase());
-              const idx = (name) => headers.findIndex(h => h === name || h.includes(name));
-              const m = {
-                permit_code: idx('permit_code') !== -1 ? idx('permit_code') : idx('code'),
-                plate: idx('plate') !== -1 ? idx('plate') : (idx('nopol') !== -1 ? idx('nopol') : idx('nomor polisi')),
-                owner: idx('owner') !== -1 ? idx('owner') : idx('pemilik'),
-                type: idx('type') !== -1 ? idx('type') : idx('jenis'),
-                valid_from: idx('valid_from') !== -1 ? idx('valid_from') : idx('from'),
-                valid_to: idx('valid_to') !== -1 ? idx('valid_to') : idx('to'),
-                stnk_exp: idx('stnk') !== -1 ? idx('stnk') : idx('masa berlaku stnk'),
-                simc_exp: idx('simc') !== -1 ? idx('simc') : idx('masa berlaku sim c'),
-                sima_exp: idx('sima') !== -1 ? idx('sima') : idx('masa berlaku sim a'),
-                status: idx('status'),
-                notes: idx('notes') !== -1 ? idx('notes') : idx('catatan'),
-              };
-              let count = 0; let skip = 0;
-              for (let i = 1; i < rows.length; i++) {
-                const r = rows[i];
-                const obj = {
-                  permit_code: (m.permit_code != null ? r[m.permit_code] : '') || genCode(),
-                  plate: (m.plate != null ? r[m.plate] : '') || '',
-                  owner: (m.owner != null ? r[m.owner] : '') || '',
-                  type: (m.type != null ? r[m.type] : '') || '',
-                  valid_from: (m.valid_from != null ? r[m.valid_from] : '') || '',
-                  valid_to: (m.valid_to != null ? r[m.valid_to] : '') || '',
-                  status: (m.status != null ? (r[m.status] || '').toLowerCase() : 'active') || 'active',
-                  notes: (m.notes != null ? r[m.notes] : '') || '',
-                };
-                if (permits.some(p => p.permit_code === obj.permit_code)) { skip++; continue; }
-                permits.push(obj); count++;
-              }
-              persist(); renderTable(); renderStats();
-              if (supabaseConnected && count) {
-                for (const p of permits.slice(-count)) await sbUpsertPermit(p);
-              }
-              $('#csvMsg').textContent = `Sukses impor ${count} baris. Lewati duplikat: ${skip}.`;
-              notify('Impor selesai', 'success');
-            } catch (e) {
-              $('#csvMsg').textContent = 'Gagal memuat CSV: ' + e.message;
-              notify('Gagal impor CSV', 'error');
+              await sbUpsertPermit(data);
+              $('#formMsg').textContent = 'Tersimpan (cloud).';
+            } catch (err) {
+              $('#formMsg').textContent = 'Tersimpan (lokal).';
             }
-          });
+          })();
+          selectedPermitCode = data.permit_code;
+          updatePreview(); renderTable(); renderSelectedInfo(); renderStats();
+          try { (e.target).reset(); } catch {}
+        });
+        $('#printPreviewBtn').addEventListener('click', () => printNode($('#permitPreview')));
 
-          // Import local CSV
-          $('#importCsvBtn').addEventListener('click', async () => {
-            if (!isAdmin) { notify('Hanya admin yang bisa impor', 'error'); return; }
-            const file = $('#csvFileInput').files?.[0];
-            if (!file) return notify('Pilih file CSV terlebih dahulu', 'error');
-            const text = await file.text();
+        // Scan controls
+        $('#startScanBtn').addEventListener('click', startScan);
+        $('#stopScanBtn').addEventListener('click', stopScan);
+        $('#manualInBtn').addEventListener('click', () => {
+          const code = $('#scanCode').textContent.trim();
+          if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
+          const match = permits.find(p => p.permit_code === code);
+        const logObj = { ts: nowISO(), event: 'IN', permit_code: code, plate: match?.plate || '' };
+        logsData.push(logObj);
+        persist(); renderLogs(); renderStats(); notify('Dicatat IN', 'success');
+        sbInsertLog(logObj);
+        playBeep(1000, 0.08);
+        });
+        $('#manualOutBtn').addEventListener('click', () => {
+          const code = $('#scanCode').textContent.trim();
+          if (!code || code === '-') return notify('Belum ada kode hasil scan', 'error');
+          const match = permits.find(p => p.permit_code === code);
+        const logObj = { ts: nowISO(), event: 'OUT', permit_code: code, plate: match?.plate || '' };
+        logsData.push(logObj);
+        persist(); renderLogs(); renderStats(); notify('Dicatat OUT', 'success');
+        sbInsertLog(logObj);
+        playBeep(800, 0.08);
+        });
+
+        // Logs
+        $('#searchLogInput').addEventListener('input', debounce(renderLogs, 200));
+        $('#clearLogsBtn').addEventListener('click', async () => { 
+          if (confirm('Hapus semua log?')) { 
+            logsData = []; persist(); renderLogs(); renderStats();
+            if (supabaseConnected) {
+              const { error } = await supabaseClient.from('logs').delete().neq('id', -1);
+              if (error) notify('Gagal bersihkan log di Supabase', 'error');
+            }
+          }
+        });
+
+        // Import from URL
+        $('#loadCsvBtn').addEventListener('click', async () => {
+          if (!isAdmin) { $('#csvMsg').textContent = 'Hanya admin yang bisa impor.'; return; }
+          const url = $('#csvUrlInput').value.trim();
+          if (!url) return ($('#csvMsg').textContent = 'Masukkan URL CSV terlebih dahulu.');
+          $('#csvMsg').textContent = 'Mengunduh...';
+          try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const text = await res.text();
             const rows = parseCSV(text);
-            if (!rows.length) return notify('CSV kosong', 'error');
+            if (!rows.length) throw new Error('CSV kosong');
             const headers = rows[0].map(h => h.trim().toLowerCase());
             const idx = (name) => headers.findIndex(h => h === name || h.includes(name));
             const m = {
@@ -1422,6 +1395,9 @@
               type: idx('type') !== -1 ? idx('type') : idx('jenis'),
               valid_from: idx('valid_from') !== -1 ? idx('valid_from') : idx('from'),
               valid_to: idx('valid_to') !== -1 ? idx('valid_to') : idx('to'),
+              stnk_exp: idx('stnk') !== -1 ? idx('stnk') : idx('masa berlaku stnk'),
+              simc_exp: idx('simc') !== -1 ? idx('simc') : idx('masa berlaku sim c'),
+              sima_exp: idx('sima') !== -1 ? idx('sima') : idx('masa berlaku sim a'),
               status: idx('status'),
               notes: idx('notes') !== -1 ? idx('notes') : idx('catatan'),
             };
@@ -1435,9 +1411,6 @@
                 type: (m.type != null ? r[m.type] : '') || '',
                 valid_from: (m.valid_from != null ? r[m.valid_from] : '') || '',
                 valid_to: (m.valid_to != null ? r[m.valid_to] : '') || '',
-                stnk_exp: (m.stnk_exp != null ? r[m.stnk_exp] : '') || '',
-                simc_exp: (m.simc_exp != null ? r[m.simc_exp] : '') || '',
-                sima_exp: (m.sima_exp != null ? r[m.sima_exp] : '') || '',
                 status: (m.status != null ? (r[m.status] || '').toLowerCase() : 'active') || 'active',
                 notes: (m.notes != null ? r[m.notes] : '') || '',
               };
@@ -1448,351 +1421,402 @@
             if (supabaseConnected && count) {
               for (const p of permits.slice(-count)) await sbUpsertPermit(p);
             }
-            notify(`Impor lokal: ${count} baris (skip ${skip})`, 'success');
-          });
-
-          // Export CSV
-          $('#downloadCsvBtn').addEventListener('click', () => {
-            const csv = toCSV(permits);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `permits-${Date.now()}.csv`;
-            document.body.appendChild(a); a.click(); a.remove();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-          });
-
-          // Utilities
-          $('#seedDataBtn').addEventListener('click', () => {
-            if (!isAdmin) { notify('Hanya admin yang bisa menambah contoh data', 'error'); return; }
-            const sample = [
-              { permit_code: genCode(), plate: 'B 1234 ABC', owner: 'Andi', type: 'Mobil', valid_from: todayStr(), valid_to: todayStr(), status: 'active', notes: '' },
-              { permit_code: genCode(), plate: 'D 9876 XYZ', owner: 'Siti', type: 'Motor', valid_from: fmtDate(new Date(Date.now()-86400000*7)), valid_to: fmtDate(new Date(Date.now()+86400000*30)), status: 'active', notes: 'Karyawan' },
-              { permit_code: genCode(), plate: 'H 5555 CD', owner: 'Budi', type: 'Truck', valid_from: fmtDate(new Date(Date.now()-86400000*90)), valid_to: fmtDate(new Date(Date.now()-86400000*1)), status: 'expired', notes: 'Vendor' },
-            ];
-            permits.push(...sample);
-            persist(); renderTable(); renderStats(); notify('Contoh data ditambahkan', 'success');
-            if (supabaseConnected) sample.forEach(sbUpsertPermit);
-          });
-          $('#resetDbBtn').addEventListener('click', async () => {
-            if (!confirm('Reset semua data?')) return;
-            if (!isAdmin) { notify('Hanya admin yang bisa reset', 'error'); return; }
-            permits = []; logsData = []; persist(); renderTable(); renderLogs(); renderStats(); selectedPermitCode = null; renderSelectedInfo();
-            if (supabaseConnected) {
-              await supabaseClient.from('permits').delete().neq('permit_code','');
-              await supabaseClient.from('logs').delete().neq('id', -1);
-            }
-          });
-
-          // Supabase controls
-          const creds = sbLoadCreds();
-          if (document.getElementById('sb_url')) {
-            document.getElementById('sb_url').value = creds.url;
-            document.getElementById('sb_key').value = creds.key;
-            if (creds.url && creds.key) sbConnect().then(sbPullAll);
+            $('#csvMsg').textContent = `Sukses impor ${count} baris. Lewati duplikat: ${skip}.`;
+            notify('Impor selesai', 'success');
+          } catch (e) {
+            $('#csvMsg').textContent = 'Gagal memuat CSV: ' + e.message;
+            notify('Gagal impor CSV', 'error');
           }
-          document.getElementById('sb_login')?.addEventListener('click', sbLogin);
-          document.getElementById('sb_logout')?.addEventListener('click', sbLogout);
-          document.getElementById('sb_connect')?.addEventListener('click', async () => {
-            await sbConnect();
-            await sbEnsureTables();
-            await sbPullAll();
-          });
-          document.getElementById('sb_disconnect')?.addEventListener('click', () => {
-            supabaseClient = null; supabaseConnected = false; sbSetStatus('Terputus dari Supabase');
-          });
-          document.getElementById('sb_sync_now')?.addEventListener('click', sbPullAll);
-        };
-
-        // PWA Registration
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-              .then(registration => {
-                console.log('SW registered: ', registration);
-              })
-              .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-              });
-          });
-        }
-        
-        // Install prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          deferredPrompt = e;
-          showInstallPrompt();
         });
-        
-        function showInstallPrompt() {
-          const installBtn = document.createElement('button');
-          installBtn.innerHTML = '📱 Install App';
-          installBtn.className = 'fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg touch-feedback';
-          installBtn.onclick = () => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-              if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted the install prompt');
-              }
-              deferredPrompt = null;
-              installBtn.remove();
-            });
+
+        // Import local CSV
+        $('#importCsvBtn').addEventListener('click', async () => {
+          if (!isAdmin) { notify('Hanya admin yang bisa impor', 'error'); return; }
+          const file = $('#csvFileInput').files?.[0];
+          if (!file) return notify('Pilih file CSV terlebih dahulu', 'error');
+          const text = await file.text();
+          const rows = parseCSV(text);
+          if (!rows.length) return notify('CSV kosong', 'error');
+          const headers = rows[0].map(h => h.trim().toLowerCase());
+          const idx = (name) => headers.findIndex(h => h === name || h.includes(name));
+          const m = {
+            permit_code: idx('permit_code') !== -1 ? idx('permit_code') : idx('code'),
+            plate: idx('plate') !== -1 ? idx('plate') : (idx('nopol') !== -1 ? idx('nopol') : idx('nomor polisi')),
+            owner: idx('owner') !== -1 ? idx('owner') : idx('pemilik'),
+            type: idx('type') !== -1 ? idx('type') : idx('jenis'),
+            valid_from: idx('valid_from') !== -1 ? idx('valid_from') : idx('from'),
+            valid_to: idx('valid_to') !== -1 ? idx('valid_to') : idx('to'),
+            status: idx('status'),
+            notes: idx('notes') !== -1 ? idx('notes') : idx('catatan'),
           };
-          document.body.appendChild(installBtn);
-        }
-        
-        // Mobile-specific features
-        let touchStartX = 0;
-        let touchStartY = 0;
-        
-        function setupMobileGestures() {
-          const container = document.querySelector('.swipe-container') || document.body;
-          
-          container.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-          });
-          
-          container.addEventListener('touchend', (e) => {
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
-            
-            const diffX = touchStartX - touchEndX;
-            const diffY = touchStartY - touchEndY;
-            
-            // Swipe left/right for tab navigation
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-              const tabs = Array.from(document.querySelectorAll('.tab-nav button'));
-              const activeTab = tabs.findIndex(tab => tab.classList.contains('tab-active'));
-              
-              if (diffX > 0 && activeTab < tabs.length - 1) {
-                // Swipe left - next tab
-                tabs[activeTab + 1].click();
-              } else if (diffX < 0 && activeTab > 0) {
-                // Swipe right - previous tab
-                tabs[activeTab - 1].click();
-              }
-            }
-          });
-        }
-        
-        // Hardware Scanner Detection & Handling
-        let scannerInput = null;
-        let scannerTimeout = null;
-        
-        function setupHardwareScanner() {
-          scannerInput = document.getElementById('hardwareScannerInput');
-          if (!scannerInput) return;
-          
-          // Auto-focus scanner input when scan tab is opened
-          document.querySelector('[data-tab="scan"]').addEventListener('click', () => {
-            setTimeout(() => {
-              if (scannerInput) scannerInput.focus();
-            }, 100);
-          });
-          
-          // Handle scanner input
-          scannerInput.addEventListener('input', (e) => {
-            const value = e.target.value.trim();
-            if (value && value.length > 3) {
-              // Simulate barcode scan
-              handleBarcodeScan(value);
-              
-              // Clear input after processing
-              setTimeout(() => {
-                scannerInput.value = '';
-                scannerInput.focus();
-              }, 100);
-            }
-          });
-          
-          // Handle scanner input with Enter key (some scanners send Enter)
-          scannerInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              const value = scannerInput.value.trim();
-              if (value) {
-                handleBarcodeScan(value);
-                scannerInput.value = '';
-                scannerInput.focus();
-              }
-            }
-          });
-          
-          // Test scanner button
-          document.getElementById('testScannerBtn')?.addEventListener('click', () => {
-            testHardwareScanner();
-          });
-          
-          // Clear scanner button
-          document.getElementById('clearScannerBtn')?.addEventListener('click', () => {
-            scannerInput.value = '';
-            scannerInput.focus();
-            notify('Input scanner dibersihkan', 'info');
-          });
-          
-          // Update scanner status
-          updateScannerStatus();
-        }
-        
-        function handleBarcodeScan(barcodeData) {
-          // Update scan code display
-          $('#scanCode').textContent = barcodeData;
-          
-          // Find matching permit
-          const match = permits.find(p => p.permit_code === barcodeData);
-          
-          if (match) {
-            // Show permit details
-            const cardHtml = `
-              <div class="print-card !w-auto !h-auto !p-2 !gap-1 !text-[8px] !rounded-md !border-emerald-400/30 !bg-emerald-500/10">
-                <div class="flex items-center justify-between">
-                  <div class="font-semibold">PERMIT KENDARAAN</div>
-                  <div class="text-[7px] text-slate-500">Hardware Scan</div>
-                </div>
-                <div class="hline !my-0"></div>
-                <div class="grid grid-cols-2 gap-1">
-                  <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
-                  <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
-                  <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
-                  <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
-                  <div class="col-span-2 grid grid-cols-3 gap-1">
-                    <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
-                    <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
-                    <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
-                  </div>
-                </div>
-                <div class="hline !my-0"></div>
-                <div class="flex items-center justify-center"><svg id="hardware_scan_barcode"></svg></div>
-              </div>`;
-            
-            $('#scanMatch').innerHTML = cardHtml;
-            renderBarcodeTo('#hardware_scan_barcode', match.permit_code || match.plate || '');
-            
-            // Play success sound
-            playBeep(1200, 0.1);
-            
-            // Auto-log if enabled
-            if (document.getElementById('autoLogToggle')?.checked) {
-              addLog('SCAN', match.permit_code, match.plate, 'Hardware Scanner');
-            }
-            
-            notify(`Barcode berhasil di-scan: ${match.permit_code}`, 'success');
-          } else {
-            // No match found
-            $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
-            playBeep(800, 0.2); // Error sound
-            notify(`Barcode tidak ditemukan: ${barcodeData}`, 'error');
+          let count = 0; let skip = 0;
+          for (let i = 1; i < rows.length; i++) {
+            const r = rows[i];
+            const obj = {
+              permit_code: (m.permit_code != null ? r[m.permit_code] : '') || genCode(),
+              plate: (m.plate != null ? r[m.plate] : '') || '',
+              owner: (m.owner != null ? r[m.owner] : '') || '',
+              type: (m.type != null ? r[m.type] : '') || '',
+              valid_from: (m.valid_from != null ? r[m.valid_from] : '') || '',
+              valid_to: (m.valid_to != null ? r[m.valid_to] : '') || '',
+              stnk_exp: (m.stnk_exp != null ? r[m.stnk_exp] : '') || '',
+              simc_exp: (m.simc_exp != null ? r[m.simc_exp] : '') || '',
+              sima_exp: (m.sima_exp != null ? r[m.sima_exp] : '') || '',
+              status: (m.status != null ? (r[m.status] || '').toLowerCase() : 'active') || 'active',
+              notes: (m.notes != null ? r[m.notes] : '') || '',
+            };
+            if (permits.some(p => p.permit_code === obj.permit_code)) { skip++; continue; }
+            permits.push(obj); count++;
           }
+          persist(); renderTable(); renderStats();
+          if (supabaseConnected && count) {
+            for (const p of permits.slice(-count)) await sbUpsertPermit(p);
+          }
+          notify(`Impor lokal: ${count} baris (skip ${skip})`, 'success');
+        });
+
+        // Export CSV
+        $('#downloadCsvBtn').addEventListener('click', () => {
+          const csv = toCSV(permits);
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = `permits-${Date.now()}.csv`;
+          document.body.appendChild(a); a.click(); a.remove();
+          setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+
+        // Utilities
+        $('#seedDataBtn').addEventListener('click', () => {
+          if (!isAdmin) { notify('Hanya admin yang bisa menambah contoh data', 'error'); return; }
+          const sample = [
+            { permit_code: genCode(), plate: 'B 1234 ABC', owner: 'Andi', type: 'Mobil', valid_from: todayStr(), valid_to: todayStr(), status: 'active', notes: '' },
+            { permit_code: genCode(), plate: 'D 9876 XYZ', owner: 'Siti', type: 'Motor', valid_from: fmtDate(new Date(Date.now()-86400000*7)), valid_to: fmtDate(new Date(Date.now()+86400000*30)), status: 'active', notes: 'Karyawan' },
+            { permit_code: genCode(), plate: 'H 5555 CD', owner: 'Budi', type: 'Truck', valid_from: fmtDate(new Date(Date.now()-86400000*90)), valid_to: fmtDate(new Date(Date.now()-86400000*1)), status: 'expired', notes: 'Vendor' },
+          ];
+          permits.push(...sample);
+          persist(); renderTable(); renderStats(); notify('Contoh data ditambahkan', 'success');
+          if (supabaseConnected) sample.forEach(sbUpsertPermit);
+        });
+        $('#resetDbBtn').addEventListener('click', async () => {
+          if (!confirm('Reset semua data?')) return;
+          if (!isAdmin) { notify('Hanya admin yang bisa reset', 'error'); return; }
+          permits = []; logsData = []; persist(); renderTable(); renderLogs(); renderStats(); selectedPermitCode = null; renderSelectedInfo();
+          if (supabaseConnected) {
+            await supabaseClient.from('permits').delete().neq('permit_code','');
+            await supabaseClient.from('logs').delete().neq('id', -1);
+          }
+        });
+
+        // Supabase controls
+        const creds = sbLoadCreds();
+        if (document.getElementById('sb_url')) {
+          document.getElementById('sb_url').value = creds.url;
+          document.getElementById('sb_key').value = creds.key;
+          if (creds.url && creds.key) sbConnect().then(sbPullAll);
         }
+        document.getElementById('sb_login')?.addEventListener('click', sbLogin);
+        document.getElementById('sb_logout')?.addEventListener('click', sbLogout);
+        document.getElementById('sb_connect')?.addEventListener('click', async () => {
+          await sbConnect();
+          await sbEnsureTables();
+          await sbPullAll();
+        });
+        document.getElementById('sb_disconnect')?.addEventListener('click', () => {
+          supabaseClient = null; supabaseConnected = false; sbSetStatus('Terputus dari Supabase');
+        });
+        document.getElementById('sb_sync_now')?.addEventListener('click', sbPullAll);
+      };
+
+      // PWA Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('SW registered: ', registration);
+            })
+            .catch(registrationError => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+      
+      // Install prompt
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        showInstallPrompt();
+      });
+      
+      function showInstallPrompt() {
+        const installBtn = document.createElement('button');
+        installBtn.innerHTML = '📱 Install App';
+        installBtn.className = 'fixed bottom-4 right-4 z-50 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg touch-feedback';
+        installBtn.onclick = () => {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+            }
+            deferredPrompt = null;
+            installBtn.remove();
+          });
+        };
+        document.body.appendChild(installBtn);
+      }
+      
+      // Mobile-specific features
+      let touchStartX = 0;
+      let touchStartY = 0;
+      
+      function setupMobileGestures() {
+        const container = document.querySelector('.swipe-container') || document.body;
         
-        function testHardwareScanner() {
-          const testBarcode = 'TEST123456';
-          scannerInput.value = testBarcode;
-          notify('Test scanner: masukkan kode manual atau scan barcode', 'info');
+        container.addEventListener('touchstart', (e) => {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+        });
+        
+        container.addEventListener('touchend', (e) => {
+          const touchEndX = e.changedTouches[0].clientX;
+          const touchEndY = e.changedTouches[0].clientY;
           
-          // Simulate scan after 2 seconds
+          const diffX = touchStartX - touchEndX;
+          const diffY = touchStartY - touchEndY;
+          
+          // Swipe left/right for tab navigation
+          if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+            const tabs = Array.from(document.querySelectorAll('.tab-nav button'));
+            const activeTab = tabs.findIndex(tab => tab.classList.contains('tab-active'));
+            
+            if (diffX > 0 && activeTab < tabs.length - 1) {
+              // Swipe left - next tab
+              tabs[activeTab + 1].click();
+            } else if (diffX < 0 && activeTab > 0) {
+              // Swipe right - previous tab
+              tabs[activeTab - 1].click();
+            }
+          }
+        });
+      }
+      
+      // Hardware Scanner Detection & Handling
+      let scannerInput = null;
+      let scannerTimeout = null;
+      
+      function setupHardwareScanner() {
+        scannerInput = document.getElementById('hardwareScannerInput');
+        if (!scannerInput) return;
+        
+        // Auto-focus scanner input when scan tab is opened
+        document.querySelector('[data-tab="scan"]').addEventListener('click', () => {
           setTimeout(() => {
-            if (scannerInput.value === testBarcode) {
-              handleBarcodeScan(testBarcode);
+            if (scannerInput) scannerInput.focus();
+          }, 100);
+        });
+        
+        // Handle scanner input
+        scannerInput.addEventListener('input', (e) => {
+          const value = e.target.value.trim();
+          if (value && value.length > 3) {
+            // Simulate barcode scan
+            handleBarcodeScan(value);
+            
+            // Clear input after processing
+            setTimeout(() => {
               scannerInput.value = '';
-            }
-          }, 2000);
-        }
-        
-        function updateScannerStatus() {
-          const statusEl = document.getElementById('scannerStatus');
-          const statusTextEl = document.getElementById('scannerStatusText');
-          
-          if (!statusEl || !statusTextEl) return;
-          
-          // Check if input is focused (simulating scanner detection)
-          if (document.activeElement === scannerInput) {
-            statusEl.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
-            statusTextEl.textContent = 'Scanner aktif';
-            statusTextEl.className = 'text-sm text-emerald-400';
-          } else {
-            statusEl.className = 'w-3 h-3 rounded-full bg-slate-500';
-            statusTextEl.textContent = 'Klik input untuk aktifkan';
-            statusTextEl.className = 'text-sm text-slate-400';
+              scannerInput.focus();
+            }, 100);
           }
-        }
+        });
         
-        // Update scanner status periodically
-        setInterval(updateScannerStatus, 1000);
-        
-        // Offline detection
-        function setupOfflineDetection() {
-          window.addEventListener('online', () => {
-            notify('Koneksi internet tersedia', 'success');
-            // Sync offline data
-            if (supabaseConnected) {
-              sbPullAll();
+        // Handle scanner input with Enter key (some scanners send Enter)
+        scannerInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const value = scannerInput.value.trim();
+            if (value) {
+              handleBarcodeScan(value);
+              scannerInput.value = '';
+              scannerInput.focus();
             }
-          });
+          }
+        });
+        
+        // Test scanner button
+        document.getElementById('testScannerBtn')?.addEventListener('click', () => {
+          testHardwareScanner();
+        });
+        
+        // Clear scanner button
+        document.getElementById('clearScannerBtn')?.addEventListener('click', () => {
+          scannerInput.value = '';
+          scannerInput.focus();
+          notify('Input scanner dibersihkan', 'info');
+        });
+        
+        // Update scanner status
+        updateScannerStatus();
+      }
+      
+      function handleBarcodeScan(barcodeData) {
+        // Update scan code display
+        $('#scanCode').textContent = barcodeData;
+        
+        // Find matching permit
+        const match = permits.find(p => p.permit_code === barcodeData);
+        
+        if (match) {
+          // Show permit details
+          const cardHtml = `
+            <div class="print-card !w-auto !h-auto !p-2 !gap-1 !text-[8px] !rounded-md !border-emerald-400/30 !bg-emerald-500/10">
+              <div class="flex items-center justify-between">
+                <div class="font-semibold">PERMIT KENDARAAN</div>
+                <div class="text-[7px] text-slate-500">Hardware Scan</div>
+              </div>
+              <div class="hline !my-0"></div>
+              <div class="grid grid-cols-2 gap-1">
+                <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
+                <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || '-'}</div></div>
+                <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || '-'}</div></div>
+                <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || '-'}</div></div>
+                <div class="col-span-2 grid grid-cols-3 gap-1">
+                  <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || '-'}</div></div>
+                  <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || '-'}</div></div>
+                  <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || '-'}</div></div>
+                </div>
+              </div>
+              <div class="hline !my-0"></div>
+              <div class="flex items-center justify-center"><svg id="hardware_scan_barcode"></svg></div>
+            </div>`;
           
-          window.addEventListener('offline', () => {
-            notify('Tidak ada koneksi internet - mode offline aktif', 'warning');
-          });
+          $('#scanMatch').innerHTML = cardHtml;
+          renderBarcodeTo('#hardware_scan_barcode', match.permit_code || match.plate || '');
+          
+          // Play success sound
+          playBeep(1200, 0.1);
+          
+          // Auto-log if enabled
+          if (document.getElementById('autoLogToggle')?.checked) {
+            addLog('SCAN', match.permit_code, match.plate, 'Hardware Scanner');
+          }
+          
+          notify(`Barcode berhasil di-scan: ${match.permit_code}`, 'success');
+        } else {
+          // No match found
+          $('#scanMatch').innerHTML = '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
+          playBeep(800, 0.2); // Error sound
+          notify(`Barcode tidak ditemukan: ${barcodeData}`, 'error');
         }
+      }
+      
+      function testHardwareScanner() {
+        const testBarcode = 'TEST123456';
+        scannerInput.value = testBarcode;
+        notify('Test scanner: masukkan kode manual atau scan barcode', 'info');
         
-        // Init
-        window.addEventListener('DOMContentLoaded', async () => {
-          loadPersisted();
-          setupTabs();
-          bindEvents();
-          renderTable();
-          renderLogs();
-          renderStats();
-          renderSelectedInfo();
-          updatePreview();
-          await populateCameras();
-          setupMobileGestures();
-          setupOfflineDetection();
-          setupHardwareScanner();
-        });
-
-        // Bulk barcodes
-        const bulkRenderOne = (container, code, width, height) => {
-          const card = document.createElement('div');
-          card.className = 'rounded-lg border border-slate-700 bg-white p-3';
-          card.innerHTML = `
-            <div class="text-xs text-slate-600 mb-1">${code}</div>
-            <div class="flex items-center justify-center"><svg></svg></div>
-          `;
-          const svg = card.querySelector('svg');
-          try {
-            JsBarcode(svg, code, { format: 'CODE128', background: '#ffffff', lineColor: '#000', width, height, displayValue: true, fontSize: 14, margin: 6 });
-          } catch (_) {}
-          container.appendChild(card);
-        };
-
-        const bulkGenerate = () => {
-          const codes = (document.getElementById('bulkCodes').value || '')
-            .split(/\r?\n/)
-            .map(s => s.trim())
-            .filter(Boolean);
-          const width = Math.max(1, Math.min(6, Number(document.getElementById('bulkWidth').value || 3)));
-          const height = Math.max(40, Math.min(200, Number(document.getElementById('bulkHeight').value || 100)));
-          const wrap = document.getElementById('bulkContainer');
-          wrap.innerHTML = '';
-          if (!codes.length) { notify('Isi daftar kode terlebih dahulu', 'error'); return; }
-          codes.forEach(code => bulkRenderOne(wrap, code, width, height));
-        };
-
-        document.getElementById('bulkGenerateBtn')?.addEventListener('click', bulkGenerate);
-        document.getElementById('bulkClearBtn')?.addEventListener('click', () => { document.getElementById('bulkContainer').innerHTML = ''; });
-        document.getElementById('bulkPrintBtn')?.addEventListener('click', () => {
-          const area = document.getElementById('print-area');
-          area.classList.remove('hidden');
-          area.innerHTML = '<div class="p-4 grid grid-cols-2 gap-4">' + document.getElementById('bulkContainer').innerHTML + '</div>';
-          window.print();
-          setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
-        });
-
+        // Simulate scan after 2 seconds
+        setTimeout(() => {
+          if (scannerInput.value === testBarcode) {
+            handleBarcodeScan(testBarcode);
+            scannerInput.value = '';
+          }
+        }, 2000);
+      }
+      
+      function updateScannerStatus() {
+        const statusEl = document.getElementById('scannerStatus');
+        const statusTextEl = document.getElementById('scannerStatusText');
         
-      </script>
-    </body>
-  </html>
+        if (!statusEl || !statusTextEl) return;
+        
+        // Check if input is focused (simulating scanner detection)
+        if (document.activeElement === scannerInput) {
+          statusEl.className = 'w-3 h-3 rounded-full bg-emerald-500 animate-pulse';
+          statusTextEl.textContent = 'Scanner aktif';
+          statusTextEl.className = 'text-sm text-emerald-400';
+        } else {
+          statusEl.className = 'w-3 h-3 rounded-full bg-slate-500';
+          statusTextEl.textContent = 'Klik input untuk aktifkan';
+          statusTextEl.className = 'text-sm text-slate-400';
+        }
+      }
+      
+      // Update scanner status periodically
+      setInterval(updateScannerStatus, 1000);
+      
+      // Offline detection
+      function setupOfflineDetection() {
+        window.addEventListener('online', () => {
+          notify('Koneksi internet tersedia', 'success');
+          // Sync offline data
+          if (supabaseConnected) {
+            sbPullAll();
+          }
+        });
+        
+        window.addEventListener('offline', () => {
+          notify('Tidak ada koneksi internet - mode offline aktif', 'warning');
+        });
+      }
+      
+      // Init
+      window.addEventListener('DOMContentLoaded', async () => {
+        loadPersisted();
+        setupTabs();
+        bindEvents();
+        renderTable();
+        renderLogs();
+        renderStats();
+        renderSelectedInfo();
+        updatePreview();
+        await populateCameras();
+        setupMobileGestures();
+        setupOfflineDetection();
+        setupHardwareScanner();
+      });
+
+      // Bulk barcodes
+      const bulkRenderOne = (container, code, width, height) => {
+        const card = document.createElement('div');
+        card.className = 'rounded-lg border border-slate-700 bg-white p-3';
+        card.innerHTML = `
+          <div class="text-xs text-slate-600 mb-1">${code}</div>
+          <div class="flex items-center justify-center"><svg></svg></div>
+        `;
+        const svg = card.querySelector('svg');
+        try {
+          JsBarcode(svg, code, { format: 'CODE128', background: '#ffffff', lineColor: '#000', width, height, displayValue: true, fontSize: 14, margin: 6 });
+        } catch (_) {}
+        container.appendChild(card);
+      };
+
+      const bulkGenerate = () => {
+        const codes = (document.getElementById('bulkCodes').value || '')
+          .split(/\r?\n/)
+          .map(s => s.trim())
+          .filter(Boolean);
+        const width = Math.max(1, Math.min(6, Number(document.getElementById('bulkWidth').value || 3)));
+        const height = Math.max(40, Math.min(200, Number(document.getElementById('bulkHeight').value || 100)));
+        const wrap = document.getElementById('bulkContainer');
+        wrap.innerHTML = '';
+        if (!codes.length) { notify('Isi daftar kode terlebih dahulu', 'error'); return; }
+        codes.forEach(code => bulkRenderOne(wrap, code, width, height));
+      };
+
+      document.getElementById('bulkGenerateBtn')?.addEventListener('click', bulkGenerate);
+      document.getElementById('bulkClearBtn')?.addEventListener('click', () => { document.getElementById('bulkContainer').innerHTML = ''; });
+      document.getElementById('bulkPrintBtn')?.addEventListener('click', () => {
+        const area = document.getElementById('print-area');
+        area.classList.remove('hidden');
+        area.innerHTML = '<div class="p-4 grid grid-cols-2 gap-4">' + document.getElementById('bulkContainer').innerHTML + '</div>';
+        window.print();
+        setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
+      });
+
+      
+    </script>
+  </body>
+</html>
 
