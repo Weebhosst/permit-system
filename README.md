@@ -13,6 +13,7 @@ Aplikasi web progresif (PWA) untuk manajemen permit kendaraan dengan fitur barco
 ### 🔍 Barcode & Scanner
 - **Generate Barcode**: CODE128 format untuk setiap permit
 - **Camera Scanner**: Scan otomatis dengan kamera belakang
+- **Hardware Scanner**: Support USB/Bluetooth barcode scanner
 - **Audio Feedback**: Beep saat barcode berhasil dibaca
 - **Mass Generation**: Generate multiple barcode sekaligus
 
@@ -27,6 +28,29 @@ Aplikasi web progresif (PWA) untuk manajemen permit kendaraan dengan fitur barco
 - **Activity Logs**: Catatan scan masuk/keluar
 - **Search & Filter**: Pencarian berdasarkan multiple criteria
 - **Mobile Optimized**: Interface yang responsive untuk mobile
+
+## 🔍 Hardware Barcode Scanner
+
+### **Setup Hardware Scanner:**
+1. **Hubungkan Scanner** via USB atau Bluetooth ke komputer
+2. **Scanner otomatis terdeteksi** sebagai keyboard HID
+3. **Klik input field** "Hardware Scanner" di tab Scan
+4. **Scan barcode** - data langsung masuk otomatis
+5. **Sistem otomatis proses** dan tampilkan detail permit
+
+### **Keuntungan Hardware Scanner:**
+- ✅ **Lebih cepat** - scan instan tanpa delay
+- ✅ **Lebih akurat** - tidak ada masalah fokus kamera
+- ✅ **Tidak perlu izin kamera** - langsung scan
+- ✅ **Bisa scan dalam gelap** - ada LED built-in
+- ✅ **Durability tinggi** - untuk penggunaan intensif
+- ✅ **Auto-focus** - scanner otomatis focus ke input
+
+### **Scanner yang Didukung:**
+- **USB Barcode Scanner** - Plug & Play
+- **Bluetooth Barcode Scanner** - Wireless
+- **2D/1D Barcode Scanner** - Semua format
+- **Industrial Scanner** - Untuk penggunaan berat
 
 ## 📱 Cara Install PWA
 
@@ -165,32 +189,100 @@ permit-system/
 - ✅ Firefox 36+
 - ❌ Safari (limited support)
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-### PWA Tidak Bisa Install
-- Pastikan HTTPS aktif
-- Clear browser cache
-- Restart browser
-- Check service worker
+### Data Tidak Tersimpan ke Supabase
 
-### Camera Tidak Bekerja
-- Izinkan akses kamera
-- Gunakan kamera belakang
-- Pastikan barcode jelas
-- Check browser permissions
+Jika data dari form "Tambah Permit" tidak tersimpan ke Supabase, ikuti langkah berikut:
 
-### Data Tidak Sync
-- Check koneksi internet
-- Verify Supabase credentials
-- Check browser console
-- Refresh halaman
+#### 1. Periksa Koneksi Supabase
+- Pastikan URL dan ANON KEY sudah benar di tab "Import"
+- Klik tombol "Connect" dan pastikan status berubah menjadi "Terhubung ke Supabase"
+- Jika gagal, periksa error message yang muncul
 
-## 📞 Support
+#### 2. Periksa Console Browser
+- Buka Developer Tools (F12) → Console
+- Coba tambah permit baru atau import CSV
+- Lihat log yang muncul untuk debugging:
+  - `"Attempting to connect to Supabase..."`
+  - `"Sending to Supabase: [payload]"`
+  - `"Supabase upsert success: [data]"` atau error message
 
-Untuk bantuan dan pertanyaan:
-- **Developer**: Yanuar Afri
-- **Email**: [your-email@domain.com]
-- **GitHub**: [your-github-username]
+#### 3. Periksa Struktur Tabel di Supabase
+Pastikan tabel `permits` memiliki kolom yang sesuai:
+```sql
+create table if not exists permits (
+  permit_code text primary key,
+  plate text,
+  owner text,
+  type text,
+  valid_from date,
+  valid_to date,
+  stnk_exp date,
+  simc_exp date,
+  sima_exp date,
+  status text,
+  notes text
+);
+```
+
+#### 4. Periksa RLS (Row Level Security)
+Jika RLS aktif, pastikan ada policy yang mengizinkan INSERT/UPDATE:
+```sql
+-- Policy untuk INSERT
+create policy "Enable insert for authenticated users" on permits
+  for insert with check (auth.role() = 'authenticated');
+
+-- Policy untuk SELECT (jika perlu)
+create policy "Enable select for all users" on permits
+  for select using (true);
+```
+
+#### 5. Periksa Data yang Dikirim
+- Pastikan tidak ada kolom yang kosong dengan format yang salah
+- Sistem otomatis mengkonversi string kosong menjadi `null` untuk kolom DATE
+- Periksa apakah `permit_code` tidak duplikat
+
+#### 6. Test Manual
+- Coba tambah permit dengan data minimal (hanya `permit_code` dan `plate`)
+- Jika masih gagal, cek error detail di console
+- Coba sync manual dengan tombol "Sync Sekarang"
+
+### Data Hilang Setelah Refresh
+
+Jika data hilang setelah refresh halaman:
+
+1. **Pastikan Supabase terhubung** sebelum refresh
+2. **Login sebagai admin** untuk memastikan akses penuh
+3. **Sync manual** dengan tombol "Sync Sekarang" setelah refresh
+4. **Periksa localStorage** sebagai backup di Developer Tools → Application → Local Storage
+
+### Import CSV Gagal
+
+Jika import CSV tidak berfungsi:
+
+1. **Format CSV harus sesuai** dengan header yang ada
+2. **Kolom `permit_code` boleh kosong** - sistem akan generate otomatis
+3. **Pastikan admin login** untuk akses import
+4. **Periksa console** untuk error detail
+
+### Barcode Scanner Tidak Bekerja
+
+Jika scanner kamera tidak membaca barcode:
+
+1. **Pastikan HTTPS aktif** (wajib untuk akses kamera)
+2. **Izinkan akses kamera** saat browser meminta
+3. **Gunakan kamera belakang** (otomatis dipilih)
+4. **Alternatif**: Gunakan hardware scanner atau input manual
+
+## Support
+
+Jika masih mengalami masalah:
+
+1. **Buka Console Browser** (F12) dan lihat error messages
+2. **Screenshot error** yang muncul
+3. **Kirim log console** untuk debugging lebih lanjut
+4. **Periksa status Supabase** di dashboard project
 
 ## 📄 License
 
