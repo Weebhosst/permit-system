@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Permit System">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHT0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjI0IiBmaWxsPSIjMGVhNWU5Ii8+CjxwYXRoIGQ9Ik00OCA5NkM0OCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMxNDQgMTIyLjUxIDEyMi41MSAxNDQgOTYgMTQ0SDY2QzQwLjQ2IDE0NCAxNiAxMjMuNTQgMTYgOThWOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNODAgMTEyQzcwLjgzNiAxMTIgNjcgMTA2LjE2NCA2NyA5OUM2NyA5MS44MzYgNzIuODM2IDg3IDgwIDg3Qzg3LjE2NCA4NyA5MyA5MS44MzYgOTMgOTlDOTMgMTA2LjE2NCA4Ny4xNjQgMTEyIDgwIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTEgODcgMTE1IDkxLjgzNiAxMTUgOTlDMTE1IDEwNi4xNjQgMTExLjE2NCAxMTIgMTEyIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHT0IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTZDNCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMxNDQgMTIyLjUxIDEyMi41MSAxNDQgOTYgMTQ0SDY2QzQwLjQ2IDE0NCAxNiAxMjMuNTQgMTYgOThWOTZaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNODAgMTEyQzcwLjgzNiAxMTIgNjcgMTA2LjE2NCA2NyA5OUM2NyA5MS44MzYgNzIuODM2IDg3IDgwIDg3Qzg3LjE2NCA4NyA5MyA5MS44MzYgOTMgOTlDOTMgMTA2LjE2NCA4Ny4xNjQgMTEyIDgwIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPHBhdGggZD0iMTEyIDExMkMxMDQuODM2IDExMiA5OSAxMDYuMTY0IDk5IDk5Qzk5IDkxLjgzNiAxMDQuODM2IDg3IDExMiA4N0MxMTEgODcgMTE1IDkxLjgzNiAxMTUgOTlDMTE1IDEwNi4xNjQgMTExLjE2NCAxMTIgMTEyIDExMloiIGZpbGw9IiMwZjE3MmEiLz4KPC9zdmc+Cg==">
     <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
     <meta name="description" content="Aplikasi web untuk manajemen permit data kendaraan dengan barcode, scanner otomatis, impor dari Google Spreadsheet (CSV), dan database SQL (SQLite di browser).">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -641,6 +641,7 @@
         <div class="flex flex-wrap gap-2">
           <button id="sb_connect" class="px-3 py-2 rounded-lg bg-emerald-500/20 border border-emerald-400/30 hover:bg-emerald-500/30"><i class="fa-solid fa-plug mr-2"></i>Simpan & Sambungkan</button>
           <button id="sb_disconnect" class="px-3 py-2 rounded-lg bg-rose-500/20 border border-rose-400/30 hover:bg-rose-500/30"><i class="fa-solid fa-link-slash mr-2"></i>Putuskan</button>
+          <button id="sb_reset" class="px-3 py-2 rounded-lg bg-orange-500/20 border border-orange-400/30 hover:bg-orange-500/30"><i class="fa-solid fa-rotate-left mr-2"></i>Reset Client</button>
           <button id="sb_sync_now" class="px-3 py-2 rounded-lg bg-sky-500/20 border border-sky-400/30 hover:bg-sky-500/30"><i class="fa-solid fa-rotate mr-2"></i>Sync Sekarang</button>
           <button id="sb_login" class="px-3 py-2 rounded-lg bg-indigo-500/20 border border-indigo-400/30 hover:bg-indigo-500/30"><i class="fa-solid fa-right-to-bracket mr-2"></i>Login</button>
           <button id="sb_logout" class="px-3 py-2 rounded-lg bg-slate-700/60 border border-slate-600 hover:bg-slate-600"><i class="fa-solid fa-right-from-bracket mr-2"></i>Logout</button>
@@ -738,14 +739,25 @@
       let permits = [];
       let logsData = [];
 
-      const persist = () => {
+      const ensureDataSaved = () => {
+        // Always save to localStorage as backup
         try {
           localStorage.setItem('permits', JSON.stringify(permits));
           localStorage.setItem('logs', JSON.stringify(logsData));
-          notify('Data tersimpan ke browser', 'success');
         } catch (e) {
-          notify('Gagal menyimpan ke browser', 'error');
+          console.error('Failed to save to localStorage:', e);
         }
+        
+        // If Supabase connected, also save there
+        if (supabaseConnected) {
+          notify('Data tersimpan ke Supabase + Browser', 'success');
+        } else {
+          notify('Data tersimpan ke Browser', 'success');
+        }
+      };
+
+      const persist = () => {
+        ensureDataSaved();
       };
       const loadPersisted = () => {
         try {
@@ -770,23 +782,75 @@
         localStorage.setItem('sb_key', key);
       };
       const sbLoadCreds = () => ({ url: localStorage.getItem('sb_url') || '', key: localStorage.getItem('sb_key') || '' });
+      const sbDisconnect = async () => {
+        if (supabaseClient) {
+          try {
+            await supabaseClient.auth.signOut();
+            supabaseClient = null;
+          } catch (e) {
+            console.log('Error during disconnect:', e);
+          }
+        }
+        supabaseConnected = false;
+        isAdmin = false;
+        sbSetStatus('Terputus dari Supabase');
+        updateAdminLockUI();
+        notify('Supabase terputus', 'info');
+      };
+
       const sbConnect = async () => {
         const url = document.getElementById('sb_url').value.trim();
         const key = document.getElementById('sb_key').value.trim();
-        if (!url || !key) { sbSetStatus('URL/KEY Supabase belum diisi'); return; }
+        if (!url || !key) { 
+          sbSetStatus('URL/KEY Supabase belum diisi'); 
+          return; 
+        }
+        
+        // Dispose old client if exists
+        if (supabaseClient) {
+          try {
+            await supabaseClient.auth.signOut();
+            supabaseClient = null;
+          } catch (e) {
+            console.log('Error disposing old client:', e);
+          }
+        }
+        
+        console.log('Attempting to connect to Supabase...');
+        sbSetStatus('Mencoba koneksi...');
+        
         try {
-          supabaseClient = window.supabase.createClient(url, key);
+          // Create new client with unique storage key
+          const storageKey = `permit-system-${Date.now()}`;
+          supabaseClient = window.supabase.createClient(url, key, {
+            auth: {
+              storageKey: storageKey,
+              autoRefreshToken: true,
+              persistSession: true,
+              detectSessionInUrl: false
+            }
+          });
+          
+          console.log('Supabase client created, testing connection...');
+          
           // simple ping
           const { data, error } = await supabaseClient.from('permits').select('count', { count: 'exact', head: true });
-          if (error) throw error;
+          if (error) {
+            console.error('Connection test failed:', error);
+            throw error;
+          }
+          
           supabaseConnected = true;
           sbSaveCreds(url, key);
           sbSetStatus('Terhubung ke Supabase.');
+          console.log('Supabase connection successful');
           notify('Supabase tersambung', 'success');
         } catch (e) {
           supabaseConnected = false;
+          supabaseClient = null;
+          console.error('Supabase connection failed:', e);
           sbSetStatus('Gagal terhubung: ' + (e.message || e));
-          notify('Gagal konek Supabase', 'error');
+          notify('Gagal konek Supabase: ' + (e.message || e), 'error');
         }
       };
 
@@ -859,31 +923,117 @@
       };
 
       const sbPullAll = async () => {
-        if (!supabaseConnected) return;
-        const { data: d1, error: e1 } = await supabaseClient.from('permits').select('*');
-        if (e1) { notify('Gagal sync permits', 'error'); return; }
-        const { data: d2, error: e2 } = await supabaseClient.from('logs').select('*');
-        if (e2) { notify('Gagal sync logs', 'error'); return; }
-        permits = Array.isArray(d1) ? d1 : [];
-        logsData = Array.isArray(d2) ? d2 : [];
-        renderTable(); renderLogs(); renderStats(); renderSelectedInfo();
+        if (!supabaseConnected) {
+          console.log('Supabase not connected, skipping pull');
+          return;
+        }
+        
+        console.log('Pulling data from Supabase...');
+        
+        try {
+          const { data: d1, error: e1 } = await supabaseClient.from('permits').select('*');
+          if (e1) { 
+            console.error('Failed to pull permits:', e1);
+            notify('Gagal sync permits: ' + e1.message, 'error'); 
+            return; 
+          }
+          
+          const { data: d2, error: e2 } = await supabaseClient.from('logs').select('*');
+          if (e2) { 
+            console.error('Failed to pull logs:', e2);
+            notify('Gagal sync logs: ' + e2.message, 'error'); 
+            return; 
+          }
+          
+          const oldPermitsCount = permits.length;
+          const oldLogsCount = logsData.length;
+          
+          permits = Array.isArray(d1) ? d1 : [];
+          logsData = Array.isArray(d2) ? d2 : [];
+          
+          console.log(`Sync complete: ${permits.length} permits, ${logsData.length} logs`);
+          console.log('Permits:', permits);
+          console.log('Logs:', logsData);
+          
+          renderTable(); 
+          renderLogs(); 
+          renderStats(); 
+          renderSelectedInfo();
+          
+          if (permits.length !== oldPermitsCount || logsData.length !== oldLogsCount) {
+            notify(`Data berhasil di-sync: ${permits.length} permits, ${logsData.length} logs`, 'success');
+          }
+        } catch (e) {
+          console.error('Unexpected error during pull:', e);
+          notify('Error tidak terduga saat sync: ' + e.message, 'error');
+        }
       };
 
       const sbUpsertPermit = async (p) => {
-        if (!supabaseConnected) return;
+        if (!supabaseConnected) {
+          console.log('Supabase not connected, skipping upsert');
+          return;
+        }
+        
         const payload = normalizePermitForDb(p);
-        const { error } = await supabaseClient.from('permits').upsert(payload, { onConflict: 'permit_code' });
-        if (error) notify('Gagal simpan ke Supabase: ' + error.message, 'error');
+        console.log('Sending to Supabase:', payload);
+        
+        try {
+          const { data, error } = await supabaseClient.from('permits').upsert(payload, { onConflict: 'permit_code' });
+          if (error) {
+            console.error('Supabase upsert error:', error);
+            notify('Gagal simpan ke Supabase: ' + error.message, 'error');
+          } else {
+            console.log('Supabase upsert success:', data);
+            notify('Data berhasil disimpan ke Supabase', 'success');
+          }
+        } catch (e) {
+          console.error('Unexpected error during upsert:', e);
+          notify('Error tidak terduga: ' + e.message, 'error');
+        }
       };
       const sbDeletePermit = async (permit_code) => {
-        if (!supabaseConnected) return;
-        const { error } = await supabaseClient.from('permits').delete().eq('permit_code', permit_code);
-        if (error) notify('Gagal hapus di Supabase', 'error');
+        if (!supabaseConnected) {
+          console.log('Supabase not connected, skipping delete');
+          return;
+        }
+        
+        console.log('Deleting from Supabase:', permit_code);
+        
+        try {
+          const { data, error } = await supabaseClient.from('permits').delete().eq('permit_code', permit_code);
+          if (error) {
+            console.error('Supabase delete error:', error);
+            notify('Gagal hapus di Supabase: ' + error.message, 'error');
+          } else {
+            console.log('Supabase delete success:', data);
+            notify('Data berhasil dihapus dari Supabase', 'success');
+          }
+        } catch (e) {
+          console.error('Unexpected error during delete:', e);
+          notify('Error tidak terduga: ' + e.message, 'error');
+        }
       };
       const sbInsertLog = async (l) => {
-        if (!supabaseConnected) return;
-        const { error } = await supabaseClient.from('logs').insert(l);
-        if (error) notify('Gagal simpan log', 'error');
+        if (!supabaseConnected) {
+          console.log('Supabase not connected, skipping log insert');
+          return;
+        }
+        
+        console.log('Inserting log to Supabase:', l);
+        
+        try {
+          const { data, error } = await supabaseClient.from('logs').insert(l);
+          if (error) {
+            console.error('Supabase log insert error:', error);
+            notify('Gagal simpan log: ' + error.message, 'error');
+          } else {
+            console.log('Supabase log insert success:', data);
+          }
+        } catch (e) {
+          console.error('Unexpected error during log insert:', e);
+          notify('Error tidak terduga: ' + e.message, 'error');
+        }
       };
 
       // Normalize payloads before sending to Supabase (hindari kirim string kosong ke kolom DATE)
@@ -1522,9 +1672,8 @@
           await sbEnsureTables();
           await sbPullAll();
         });
-        document.getElementById('sb_disconnect')?.addEventListener('click', () => {
-          supabaseClient = null; supabaseConnected = false; sbSetStatus('Terputus dari Supabase');
-        });
+        document.getElementById('sb_disconnect')?.addEventListener('click', sbDisconnect);
+        document.getElementById('sb_reset')?.addEventListener('click', sbResetClient);
         document.getElementById('sb_sync_now')?.addEventListener('click', sbPullAll);
       };
 
@@ -1761,9 +1910,23 @@
         });
       }
       
+      // Cleanup on page unload
+      window.addEventListener('beforeunload', () => {
+        if (supabaseClient) {
+          try {
+            supabaseClient.auth.signOut();
+          } catch (e) {
+            console.log('Error during cleanup:', e);
+          }
+        }
+      });
+      
       // Init
       window.addEventListener('DOMContentLoaded', async () => {
+        // Load from localStorage first (fallback)
         loadPersisted();
+        
+        // Setup UI
         setupTabs();
         bindEvents();
         renderTable();
@@ -1775,6 +1938,19 @@
         setupMobileGestures();
         setupOfflineDetection();
         setupHardwareScanner();
+        
+        // Try to connect to Supabase and sync data
+        const creds = sbLoadCreds();
+        if (creds.url && creds.key) {
+          try {
+            await sbConnect();
+            if (supabaseConnected) {
+              await sbPullAll(); // This will override localStorage data with Supabase data
+            }
+          } catch (e) {
+            console.log('Supabase connection failed, using localStorage data');
+          }
+        }
       });
 
       // Bulk barcodes
@@ -1815,7 +1991,42 @@
         setTimeout(() => { area.classList.add('hidden'); area.innerHTML = ''; }, 100);
       });
 
-      
+      const sbResetClient = async () => {
+        console.log('Resetting Supabase client...');
+        
+        // Force cleanup
+        if (supabaseClient) {
+          try {
+            await supabaseClient.auth.signOut();
+          } catch (e) {
+            console.log('Error during client reset:', e);
+          }
+          supabaseClient = null;
+        }
+        
+        supabaseConnected = false;
+        isAdmin = false;
+        sbSetStatus('Client di-reset');
+        updateAdminLockUI();
+        
+        // Clear any stored auth data
+        try {
+          localStorage.removeItem('sb_url');
+          localStorage.removeItem('sb_key');
+          // Clear any Supabase auth data
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('sb-') || key.includes('supabase')) {
+              localStorage.removeItem(key);
+            }
+          });
+        } catch (e) {
+          console.log('Error clearing storage:', e);
+        }
+        
+        notify('Supabase client berhasil di-reset', 'info');
+      };
+
+
     </script>
   </body>
 </html>
