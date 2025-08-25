@@ -14,11 +14,8 @@
     />
     <meta name="apple-mobile-web-app-title" content="Permit System" />
     <link rel="manifest" href="manifest.json" />
-    <link
-      rel="apple-touch-icon"
-      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHR00IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTYDNCA2OS40OSA2OS40 OSA0OCA5NiA0OEg5NkMx INDIANA1MjI.144LD 96H66C40.46 144 16 123.54 16 98V96Z"
-      fill="white"
-    />
+    <link rel="icon" type="image/png" sizes="192x192" href="logo-192.png" />
+    <link rel="apple-touch-icon" href="logo-192.png" />
     <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
     <meta
       name="description"
@@ -278,9 +275,9 @@
       >
         <div class="flex items-center gap-3">
           <div
-            class="h-10 w-10 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300"
+            class="h-10 w-10 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center overflow-hidden"
           >
-            <i class="fa-solid fa-car-rear"></i>
+            <img src="logo-192.png" alt="Logo" class="w-8 h-8 object-contain" />
           </div>
           <div>
             <h1 class="text-xl font-semibold tracking-wide">
@@ -392,7 +389,7 @@
             class="w-full h-48 md:h-40 lg:h-48 rounded-xl overflow-hidden border border-sky-400/20 bg-sky-950/30"
           >
             <img
-              src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1f760514-eded-47ee-a04a-41dc3256348f.png"
+              src="logogda.jpg"
               alt="Pemandangan gerbang keamanan kantor modern pada sore hari, petugas keamanan sedang memindai barcode pada kaca mobil menggunakan pemindai, suasana profesional dan aman dengan lampu jalan lembut dan gedung kantor di latar belakang, gaya fotografi realistis berwarna biru kehijauan"
               class="w-full h-full object-cover"
               onerror="this.onerror=null; this.src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e3b4aa07-b687-418b-81b3-efab53819a9b.png';"
@@ -783,17 +780,17 @@
                   <div class="text-slate-500">Jenis</div>
                   <div id="pp_type" class="font-semibold">-</div>
                 </div>
-                <div class="col-span-2 grid grid-cols-2 gap-2">
+                <div class="col-span-2 grid grid-cols-3 gap-2">
                   <div>
-                    <div class="text-slate-500">Masa Berlaku STNK</div>
+                    <div class="text-slate-500">STNK</div>
                     <div id="pp_stnk" class="font-semibold">-</div>
                   </div>
                   <div>
-                    <div class="text-slate-500">Masa Berlaku SIM C</div>
+                    <div class="text-slate-500">SIM C</div>
                     <div id="pp_simc" class="font-semibold">-</div>
                   </div>
                   <div>
-                    <div class="text-slate-500">Masa Berlaku SIM A</div>
+                    <div class="text-slate-500">SIM A</div>
                     <div id="pp_sima" class="font-semibold">-</div>
                   </div>
                 </div>
@@ -818,9 +815,12 @@
       <section id="scan" class="tab-section hidden fade-in">
         <!-- Hardware Scanner Section -->
         <div class="card p-5 rounded-xl space-y-4 mb-6">
-          <h3 class="font-semibold text-sky-300">
-            <i class="fa-solid fa-barcode mr-2"></i>Hardware Barcode Scanner
-          </h3>
+          <div class="flex items-center gap-3 mb-2">
+            <div class="h-8 w-8 rounded-lg bg-sky-500/20 border border-sky-400/30 flex items-center justify-center overflow-hidden">
+              <img src="logo-192.png" alt="Logo" class="w-6 h-6 object-contain" />
+            </div>
+            <h3 class="font-semibold text-sky-300">Hardware Barcode Scanner</h3>
+          </div>
           <p class="text-slate-300">
             Gunakan USB/Bluetooth barcode scanner untuk scan yang lebih cepat
             dan akurat.
@@ -981,12 +981,16 @@
         <!-- QR Code Generator Individual -->
         <div class="card p-5 rounded-xl space-y-4">
           <div class="flex items-center gap-3 mb-4">
-            <div class="h-10 w-10 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300">
-              <i class="fa-solid fa-qrcode text-xl"></i>
+            <div
+              class="h-10 w-10 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center overflow-hidden"
+            >
+              <img src="logo-192.png" alt="Logo" class="w-8 h-8 object-contain" />
             </div>
             <div>
               <h3 class="font-semibold text-xl">QR Code Generator Premium</h3>
-              <p class="text-sm text-slate-300">Generate QR Code dengan desain menarik untuk permit kendaraan</p>
+              <p class="text-sm text-slate-300">
+                Generate QR Code dengan desain menarik untuk permit kendaraan
+              </p>
             </div>
           </div>
 
@@ -994,7 +998,9 @@
             <!-- Input Section -->
             <div class="space-y-4">
               <div class="space-y-2">
-                <label class="text-sm text-slate-300 font-medium flex items-center gap-2">
+                <label
+                  class="text-sm text-slate-300 font-medium flex items-center gap-2"
+                >
                   <i class="fa-solid fa-car text-sky-400"></i>
                   Pilih Permit Kendaraan
                 </label>
@@ -1007,7 +1013,9 @@
               </div>
 
               <div class="space-y-2">
-                <label class="text-sm text-slate-300 font-medium flex items-center gap-2">
+                <label
+                  class="text-sm text-slate-300 font-medium flex items-center gap-2"
+                >
                   <i class="fa-solid fa-edit text-green-400"></i>
                   Teks Kustom (Opsional)
                 </label>
@@ -1021,7 +1029,9 @@
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="text-sm text-slate-300 font-medium">Ukuran QR</label>
+                  <label class="text-sm text-slate-300 font-medium"
+                    >Ukuran QR</label
+                  >
                   <select
                     id="qrCodeSize"
                     class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
@@ -1033,7 +1043,9 @@
                   </select>
                 </div>
                 <div>
-                  <label class="text-sm text-slate-300 font-medium">Error Correction</label>
+                  <label class="text-sm text-slate-300 font-medium"
+                    >Error Correction</label
+                  >
                   <select
                     id="qrErrorLevel"
                     class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
@@ -1048,7 +1060,9 @@
 
               <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="text-sm text-slate-300 font-medium">Warna QR</label>
+                  <label class="text-sm text-slate-300 font-medium"
+                    >Warna QR</label
+                  >
                   <input
                     id="qrCodeColor"
                     type="color"
@@ -1057,7 +1071,9 @@
                   />
                 </div>
                 <div>
-                  <label class="text-sm text-slate-300 font-medium">Warna Background</label>
+                  <label class="text-sm text-slate-300 font-medium"
+                    >Warna Background</label
+                  >
                   <input
                     id="qrBgColor"
                     type="color"
@@ -1072,7 +1088,8 @@
                   id="generateQrCodeBtn"
                   class="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 hover:from-purple-500/30 hover:to-pink-500/30 transition-all duration-200 touch-feedback"
                 >
-                  <i class="fa-solid fa-magic-wand-sparkles mr-2"></i>Generate QR Code
+                  <i class="fa-solid fa-magic-wand-sparkles mr-2"></i>Generate
+                  QR Code
                 </button>
                 <button
                   id="downloadQrCodeBtn"
@@ -1087,11 +1104,23 @@
             <div class="space-y-4">
               <div class="text-center">
                 <h4 class="font-medium text-slate-300 mb-3">Preview QR Code</h4>
-                <div class="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl p-6 shadow-2xl border-4 border-slate-300 min-h-[350px] flex flex-col items-center justify-center">
-                  <div id="qrCodeCanvas" class="flex items-center justify-center mb-4"></div>
+                <div
+                  class="relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl p-6 shadow-2xl border-4 border-slate-300 min-h-[350px] flex flex-col items-center justify-center"
+                >
+                  <div
+                    id="qrCodeCanvas"
+                    class="flex items-center justify-center mb-4"
+                  ></div>
                   <div id="qrCodeInfo" class="text-center space-y-1">
-                    <p class="text-sm text-slate-600 font-medium" id="qrOwnerName">Belum ada data</p>
-                    <p class="text-xs text-slate-500" id="qrPermitCode">Pilih permit untuk generate</p>
+                    <p
+                      class="text-sm text-slate-600 font-medium"
+                      id="qrOwnerName"
+                    >
+                      Belum ada data
+                    </p>
+                    <p class="text-xs text-slate-500" id="qrPermitCode">
+                      Pilih permit untuk generate
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1103,18 +1132,24 @@
         <!-- QR Code Generator Massal -->
         <div class="card p-5 rounded-xl space-y-4 mt-6">
           <div class="flex items-center gap-3 mb-4">
-            <div class="h-10 w-10 rounded-lg bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-300">
-              <i class="fa-solid fa-layer-group text-xl"></i>
+            <div
+              class="h-10 w-10 rounded-lg bg-orange-500/20 border border-orange-400/30 flex items-center justify-center overflow-hidden"
+            >
+              <img src="logo-192.png" alt="Logo" class="w-8 h-8 object-contain" />
             </div>
             <div>
               <h3 class="font-semibold text-xl">Generate QR Code Massal</h3>
-              <p class="text-sm text-slate-300">Generate QR Code untuk multiple permit sekaligus</p>
+              <p class="text-sm text-slate-300">
+                Generate QR Code untuk multiple permit sekaligus
+              </p>
             </div>
           </div>
 
           <div class="grid md:grid-cols-4 gap-4 mb-4">
             <div>
-              <label class="text-sm text-slate-300 font-medium">Filter Status</label>
+              <label class="text-sm text-slate-300 font-medium"
+                >Filter Status</label
+              >
               <select
                 id="bulkQrStatus"
                 class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
@@ -1126,7 +1161,9 @@
               </select>
             </div>
             <div>
-              <label class="text-sm text-slate-300 font-medium">Ukuran QR</label>
+              <label class="text-sm text-slate-300 font-medium"
+                >Ukuran QR</label
+              >
               <select
                 id="bulkQrSize"
                 class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
@@ -1137,7 +1174,9 @@
               </select>
             </div>
             <div>
-              <label class="text-sm text-slate-300 font-medium">Kolom Layout</label>
+              <label class="text-sm text-slate-300 font-medium"
+                >Kolom Layout</label
+              >
               <select
                 id="bulkQrColumns"
                 class="w-full px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
@@ -1183,7 +1222,9 @@
               <i class="fa-solid fa-trash mr-2"></i>Clear All
             </button>
             <div class="flex-1 text-right">
-              <span id="bulkQrCount" class="text-sm text-slate-400">0 QR Code di-generate</span>
+              <span id="bulkQrCount" class="text-sm text-slate-400"
+                >0 QR Code di-generate</span
+              >
             </div>
           </div>
 
@@ -2338,10 +2379,7 @@
         if (sSIMC) sSIMC.textContent = simc;
         if (sSIMA) sSIMA.textContent = sima;
         // Barcode hanya berisi permit code saja
-        renderBarcodeTo(
-          "#pp_barcode",
-          $("#f_permit_code").value || "",
-        );
+        renderBarcodeTo("#pp_barcode", $("#f_permit_code").value || "");
       };
 
       const genCode = () => {
@@ -2563,7 +2601,9 @@
               headers.findIndex((h) => h === name || h.includes(name));
             const m = {
               permit_code:
-                (idx("permit_code") !== -1 ? idx("permit_code") : idx("code")) || 0,
+                (idx("permit_code") !== -1
+                  ? idx("permit_code")
+                  : idx("code")) || 0,
               plate:
                 (idx("plate") !== -1
                   ? idx("plate")
@@ -2573,14 +2613,21 @@
               owner: (idx("owner") !== -1 ? idx("owner") : idx("pemilik")) || 2,
               type: (idx("type") !== -1 ? idx("type") : idx("jenis")) || 3,
               valid_from:
-                (idx("valid_from") !== -1 ? idx("valid_from") : idx("from")) || 4,
-              valid_to: (idx("valid_to") !== -1 ? idx("valid_to") : idx("to")) || 5,
+                (idx("valid_from") !== -1 ? idx("valid_from") : idx("from")) ||
+                4,
+              valid_to:
+                (idx("valid_to") !== -1 ? idx("valid_to") : idx("to")) || 5,
               stnk_exp:
-                (idx("stnk") !== -1 ? idx("stnk") : idx("masa berlaku stnk")) || 4,
+                (idx("stnk") !== -1 ? idx("stnk") : idx("masa berlaku stnk")) ||
+                4,
               simc_exp:
-                (idx("simc") !== -1 ? idx("simc") : idx("masa berlaku sim c")) || 5,
+                (idx("simc") !== -1
+                  ? idx("simc")
+                  : idx("masa berlaku sim c")) || 5,
               sima_exp:
-                (idx("sima") !== -1 ? idx("sima") : idx("masa berlaku sim a")) || 5,
+                (idx("sima") !== -1
+                  ? idx("sima")
+                  : idx("masa berlaku sim a")) || 5,
               status: idx("status") || 8,
               notes: (idx("notes") !== -1 ? idx("notes") : idx("catatan")) || 9,
             };
@@ -2640,7 +2687,8 @@
             headers.findIndex((h) => h === name || h.includes(name));
           const m = {
             permit_code:
-              (idx("permit_code") !== -1 ? idx("permit_code") : idx("code")) || 0,
+              (idx("permit_code") !== -1 ? idx("permit_code") : idx("code")) ||
+              0,
             plate:
               (idx("plate") !== -1
                 ? idx("plate")
@@ -2651,13 +2699,17 @@
             type: (idx("type") !== -1 ? idx("type") : idx("jenis")) || 3,
             valid_from:
               (idx("valid_from") !== -1 ? idx("valid_from") : idx("from")) || 4,
-            valid_to: (idx("valid_to") !== -1 ? idx("valid_to") : idx("to")) || 5,
+            valid_to:
+              (idx("valid_to") !== -1 ? idx("valid_to") : idx("to")) || 5,
             stnk_exp:
-              (idx("stnk") !== -1 ? idx("stnk") : idx("masa berlaku stnk")) || 4,
+              (idx("stnk") !== -1 ? idx("stnk") : idx("masa berlaku stnk")) ||
+              4,
             simc_exp:
-              (idx("simc") !== -1 ? idx("simc") : idx("masa berlaku sim c")) || 5,
+              (idx("simc") !== -1 ? idx("simc") : idx("masa berlaku sim c")) ||
+              5,
             sima_exp:
-              (idx("sima") !== -1 ? idx("sima") : idx("masa berlaku sim a")) || 5,
+              (idx("sima") !== -1 ? idx("sima") : idx("masa berlaku sim a")) ||
+              5,
             status: idx("status") || 8,
             notes: (idx("notes") !== -1 ? idx("notes") : idx("catatan")) || 9,
           };
@@ -2701,7 +2753,7 @@
         // Export CSV
         $("#downloadCsvBtn").addEventListener("click", () => {
           const csv = toCSV(permits);
-          const blob = new Blob([csv], { type: "text/csv" });
+          const blob = new CSVBlob([csv], { type: "text/csv" });
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
           a.download = `permits-${Date.now()}.csv`;
@@ -2976,33 +3028,33 @@
         if (match) {
           // Show permit details
           const cardHtml = `
-            <div class="print-card !w-auto !h-auto !p-2 !gap-1 !text-[8px] !rounded-md !border-emerald-400/30 !bg-emerald-500/10">
+            <div class="print-card bg-white text-slate-900" style="zoom:.9">
               <div class="flex items-center justify-between">
-                <div class="font-semibold">PERMIT KENDARAAN</div>
-                <div class="text-[7px] text-slate-500">Hardware Scan</div>
+                <div class="text-xs">
+                  <div class="font-semibold">PERMIT KENDARAAN</div>
+                  <div class="text-slate-500">Akses Area Terbatas</div>
+                </div>
+                <div class="text-[10px] text-slate-500">Hardware Scan</div>
               </div>
-              <div class="hline !my-0"></div>
-              <div class="grid grid-cols-2 gap-1">
+              <div class="hline"></div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
                 <div><div class="text-slate-500">Kode</div><div class="font-semibold">${match.permit_code}</div></div>
                 <div><div class="text-slate-500">Plat</div><div class="font-semibold">${match.plate || "-"}</div></div>
                 <div><div class="text-slate-500">Pemilik</div><div class="font-semibold truncate">${match.owner || "-"}</div></div>
                 <div><div class="text-slate-500">Jenis</div><div class="font-semibold">${match.type || "-"}</div></div>
-                <div class="col-span-2 grid grid-cols-3 gap-1">
+                <div class="col-span-2 grid grid-cols-3 gap-2">
                   <div><div class="text-slate-500">STNK</div><div class="font-semibold">${match.stnk_exp || "-"}</div></div>
                   <div><div class="text-slate-500">SIM C</div><div class="font-semibold">${match.simc_exp || "-"}</div></div>
                   <div><div class="text-slate-500">SIM A</div><div class="font-semibold">${match.sima_exp || "-"}</div></div>
                 </div>
               </div>
-              <div class="hline !my-0"></div>
+              <div class="hline"></div>
               <div class="flex items-center justify-center"><svg id="hardware_scan_barcode"></svg></div>
             </div>`;
 
           $("#scanMatch").innerHTML = cardHtml;
           // Hardware scanner barcode hanya menampilkan permit code
-          renderBarcodeTo(
-            "#hardware_scan_barcode",
-            match.permit_code || "",
-          );
+          renderBarcodeTo("#hardware_scan_barcode", match.permit_code || "");
 
           // Play success sound
           playBeep(1200, 0.1);
@@ -3137,10 +3189,10 @@
         if (!select) return;
 
         select.innerHTML = '<option value="">-- Pilih Permit --</option>';
-        permits.forEach(permit => {
-          const option = document.createElement('option');
+        permits.forEach((permit) => {
+          const option = document.createElement("option");
           option.value = permit.permit_code;
-          option.textContent = `${permit.permit_code} - ${permit.plate} (${permit.owner || 'Tanpa Nama'})`;
+          option.textContent = `${permit.permit_code} - ${permit.plate} (${permit.owner || "Tanpa Nama"})`;
           select.appendChild(option);
         });
       };
@@ -3159,10 +3211,10 @@
           return;
         }
 
-        const permit = permits.find(p => p.permit_code === permitCode);
+        const permit = permits.find((p) => p.permit_code === permitCode);
         if (permit) {
-          ownerEl.textContent = `🚗 ${permit.owner || 'Nama tidak tersedia'} - ${permit.plate}`;
-          codeEl.textContent = `📋 ${permit.permit_code} (${permit.type || 'Kendaraan'})`;
+          ownerEl.textContent = `🚗 ${permit.owner || "Nama tidak tersedia"} - ${permit.plate}`;
+          codeEl.textContent = `📋 ${permit.permit_code} (${permit.type || "Kendaraan"})`;
 
           // Hanya tampilkan permit_code di teks kustom
           $("#qrCodeText").value = permit.permit_code;
@@ -3183,7 +3235,7 @@
 
         // QR Code hanya berisi permit_code saja (sama seperti barcode)
         if (!finalText && permitCode) {
-          const permit = permits.find(p => p.permit_code === permitCode);
+          const permit = permits.find((p) => p.permit_code === permitCode);
           if (permit) {
             $("#qrCodeText").value = permit.permit_code; // Update textarea dengan permit_code saja
             finalText = permit.permit_code;
@@ -3191,7 +3243,8 @@
         }
 
         if (!finalText) {
-          msgEl.textContent = "❌ Pilih permit atau masukkan teks untuk QR Code";
+          msgEl.textContent =
+            "❌ Pilih permit atau masukkan teks untuk QR Code";
           msgEl.style.color = "#ef4444";
           return;
         }
@@ -3201,7 +3254,8 @@
           canvas.innerHTML = "";
 
           // Show loading animation
-          canvas.innerHTML = '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div></div>';
+          canvas.innerHTML =
+            '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div></div>';
 
           setTimeout(() => {
             // Create QR code using qrcode-generator library
@@ -3210,10 +3264,10 @@
             qr.make();
 
             // Create actual canvas element for proper rendering
-            const actualCanvas = document.createElement('canvas');
+            const actualCanvas = document.createElement("canvas");
             actualCanvas.width = size;
             actualCanvas.height = size;
-            const ctx = actualCanvas.getContext('2d');
+            const ctx = actualCanvas.getContext("2d");
 
             // Set background color
             ctx.fillStyle = bgColor;
@@ -3232,7 +3286,7 @@
                     offset + col * cellSize,
                     offset + row * cellSize,
                     cellSize,
-                    cellSize
+                    cellSize,
                   );
                 }
               }
@@ -3240,12 +3294,13 @@
 
             // Clear loading and add canvas
             canvas.innerHTML = "";
-            actualCanvas.style.maxWidth = '100%';
-            actualCanvas.style.height = 'auto';
-            actualCanvas.className = 'rounded-lg shadow-lg';
+            actualCanvas.style.maxWidth = "100%";
+            actualCanvas.style.height = "auto";
+            actualCanvas.className = "rounded-lg shadow-lg";
             canvas.appendChild(actualCanvas);
 
-            msgEl.textContent = "✅ QR Code berhasil dibuat dengan tampilan premium!";
+            msgEl.textContent =
+              "✅ QR Code berhasil dibuat dengan tampilan premium!";
             msgEl.style.color = "#10b981";
 
             // Store canvas for download
@@ -3254,23 +3309,25 @@
             // Success sound
             playBeep(1200, 0.1);
           }, 500);
-
         } catch (e) {
           msgEl.textContent = "❌ Gagal membuat QR Code: " + e.message;
           msgEl.style.color = "#ef4444";
-          console.error('QR Code generation error:', e);
+          console.error("QR Code generation error:", e);
         }
       };
 
       const downloadQRCode = () => {
         if (!qrCodeInstance) {
-          notify("QR Code belum dibuat. Generate QR Code terlebih dahulu", "error");
+          notify(
+            "QR Code belum dibuat. Generate QR Code terlebih dahulu",
+            "error",
+          );
           return;
         }
 
         try {
           const permitCode = $("#qrPermitSelect").value || "custom";
-          const timestamp = new Date().toISOString().slice(0,10);
+          const timestamp = new Date().toISOString().slice(0, 10);
           const url = qrCodeInstance.toDataURL("image/png");
           const a = document.createElement("a");
           a.href = url;
@@ -3281,7 +3338,7 @@
           notify("QR Code berhasil diunduh", "success");
         } catch (e) {
           notify("Gagal mengunduh QR Code: " + e.message, "error");
-          console.error('Download error:', e);
+          console.error("Download error:", e);
         }
       };
 
@@ -3297,9 +3354,11 @@
         let filteredPermits = permits;
         if (statusFilter) {
           if (statusFilter === "expired") {
-            filteredPermits = permits.filter(p => isExpired(p));
+            filteredPermits = permits.filter((p) => isExpired(p));
           } else {
-            filteredPermits = permits.filter(p => (p.status || "active") === statusFilter && !isExpired(p));
+            filteredPermits = permits.filter(
+              (p) => (p.status || "active") === statusFilter && !isExpired(p),
+            );
           }
         }
 
@@ -3334,18 +3393,18 @@
               const qrData = permit.permit_code;
 
               // Create QR code
-              const qr = qrcode(0, 'M');
+              const qr = qrcode(0, "M");
               qr.addData(qrData);
               qr.make();
 
               // Create canvas
-              const canvas = document.createElement('canvas');
+              const canvas = document.createElement("canvas");
               canvas.width = size;
               canvas.height = size;
-              const ctx = canvas.getContext('2d');
+              const ctx = canvas.getContext("2d");
 
               // White background
-              ctx.fillStyle = '#ffffff';
+              ctx.fillStyle = "#ffffff";
               ctx.fillRect(0, 0, size, size);
 
               // Draw QR code
@@ -3353,7 +3412,7 @@
               const cellSize = Math.floor(size / modules);
               const offset = Math.floor((size - cellSize * modules) / 2);
 
-              ctx.fillStyle = '#000000';
+              ctx.fillStyle = "#000000";
               for (let row = 0; row < modules; row++) {
                 for (let col = 0; col < modules; col++) {
                   if (qr.isDark(row, col)) {
@@ -3361,52 +3420,61 @@
                       offset + col * cellSize,
                       offset + row * cellSize,
                       cellSize,
-                      cellSize
+                      cellSize,
                     );
                   }
                 }
               }
 
               // Create card element
-              const card = document.createElement('div');
-              card.className = 'bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl p-4 border-2 border-slate-300 shadow-lg';
+              const card = document.createElement("div");
+              card.className =
+                "bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl p-4 border-2 border-slate-300 shadow-lg";
               card.innerHTML = `
                 <div class="text-center space-y-2">
                   <div class="flex items-center justify-center mb-3">
                     <canvas class="rounded-lg shadow-md"></canvas>
                   </div>
                   <div class="space-y-1">
-                    <h4 class="font-bold text-sm text-slate-800">🚗 ${permit.owner || 'Tanpa Nama'}</h4>
+                    <h4 class="font-bold text-sm text-slate-800">🚗 ${permit.owner || "Tanpa Nama"}</h4>
                     <p class="text-xs text-slate-600">📋 ${permit.permit_code}</p>
-                    <p class="text-xs text-slate-600">🚙 ${permit.plate} (${permit.type || 'Kendaraan'})</p>
+                    <p class="text-xs text-slate-600">🚙 ${permit.plate} (${permit.type || "Kendaraan"})</p>
                     <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      isExpired(permit) ? 'bg-red-100 text-red-800' :
-                      permit.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
+                      isExpired(permit)
+                        ? "bg-red-100 text-red-800"
+                        : permit.status === "pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-green-100 text-green-800"
                     }">
-                      ${isExpired(permit) ? '❌ Expired' : permit.status === 'pending' ? '⏳ Pending' : '✅ Active'}
+                      ${isExpired(permit) ? "❌ Expired" : permit.status === "pending" ? "⏳ Pending" : "✅ Active"}
                     </span>
                   </div>
                 </div>
               `;
 
               // Add canvas to card
-              const cardCanvas = card.querySelector('canvas');
+              const cardCanvas = card.querySelector("canvas");
               cardCanvas.width = canvas.width;
               cardCanvas.height = canvas.height;
-              const cardCtx = cardCanvas.getContext('2d');
+              const cardCtx = cardCanvas.getContext("2d");
               cardCtx.drawImage(canvas, 0, 0);
 
               container.appendChild(card);
-              bulkQrInstances.push({permit, canvas});
-
+              bulkQrInstances.push({ permit, canvas });
             } catch (e) {
-              console.error('Error generating QR for permit:', permit.permit_code, e);
+              console.error(
+                "Error generating QR for permit:",
+                permit.permit_code,
+                e,
+              );
             }
           });
 
           countEl.textContent = `${bulkQrInstances.length} QR Code berhasil di-generate`;
-          notify(`Successfully generated ${bulkQrInstances.length} QR Codes`, "success");
+          notify(
+            `Successfully generated ${bulkQrInstances.length} QR Codes`,
+            "success",
+          );
           playBeep(1000, 0.1);
         }, 1000);
       };
@@ -3433,8 +3501,11 @@
           return;
         }
 
-        if (typeof JSZip === 'undefined') {
-          notify("Library JSZip belum dimuat, menggunakan download satu per satu...", "info");
+        if (typeof JSZip === "undefined") {
+          notify(
+            "Library JSZip belum dimuat, menggunakan download satu per satu...",
+            "info",
+          );
           // Fallback: download one by one
           for (let i = 0; i < bulkQrInstances.length; i++) {
             const instance = bulkQrInstances[i];
@@ -3445,17 +3516,24 @@
               const url = canvas.toDataURL("image/png");
               const a = document.createElement("a");
               a.href = url;
-              a.download = `${String(i + 1).padStart(3, '0')}-${permitCode}-${plateNo.replace(/\s/g, '')}.png`;
+              a.download = `${String(i + 1).padStart(3, "0")}-${permitCode}-${plateNo.replace(/\s/g, "")}.png`;
               document.body.appendChild(a);
               a.click();
               a.remove();
               // Small delay between downloads
-              await new Promise(resolve => setTimeout(resolve, 200));
+              await new Promise((resolve) => setTimeout(resolve, 200));
             } catch (e) {
-              console.error("Error downloading:", instance.permit.permit_code, e);
+              console.error(
+                "Error downloading:",
+                instance.permit.permit_code,
+                e,
+              );
             }
           }
-          notify(`${bulkQrInstances.length} QR Code berhasil diunduh satu per satu`, "success");
+          notify(
+            `${bulkQrInstances.length} QR Code berhasil diunduh satu per satu`,
+            "success",
+          );
           return;
         }
 
@@ -3471,38 +3549,45 @@
               const permitCode = instance.permit.permit_code || "custom";
               const plateNo = instance.permit.plate || "NOPLATE";
               const dataUrl = canvas.toDataURL("image/png");
-              
+
               // Convert data URL to blob
               const response = await fetch(dataUrl);
               const blob = await response.blob();
-              
-              const fileName = `${String(i + 1).padStart(3, '0')}-${permitCode}-${plateNo.replace(/\s/g, '')}.png`;
+
+              const fileName = `${String(i + 1).padStart(3, "0")}-${permitCode}-${plateNo.replace(/\s/g, "")}.png`;
               folder.file(fileName, blob);
             } catch (e) {
-              console.error("Error adding to zip:", instance.permit.permit_code, e);
+              console.error(
+                "Error adding to zip:",
+                instance.permit.permit_code,
+                e,
+              );
             }
           }
 
           notify("Generating ZIP file...", "info");
-          const content = await zip.generateAsync({ 
+          const content = await zip.generateAsync({
             type: "blob",
             compression: "DEFLATE",
-            compressionOptions: { level: 6 }
+            compressionOptions: { level: 6 },
           });
-          
+
           const url = URL.createObjectURL(content);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `qr_codes_${new Date().toISOString().slice(0,10)}_${Date.now()}.zip`;
+          a.download = `qr_codes_${new Date().toISOString().slice(0, 10)}_${Date.now()}.zip`;
           document.body.appendChild(a);
           a.click();
           a.remove();
           URL.revokeObjectURL(url);
-          
-          notify(`ZIP berisi ${bulkQrInstances.length} QR Code berhasil diunduh`, "success");
+
+          notify(
+            `ZIP berisi ${bulkQrInstances.length} QR Code berhasil diunduh`,
+            "success",
+          );
         } catch (e) {
           notify("Gagal membuat ZIP: " + e.message, "error");
-          console.error('Zip generation error:', e);
+          console.error("Zip generation error:", e);
         }
       };
 
