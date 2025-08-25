@@ -16,7 +16,7 @@
     <link rel="manifest" href="manifest.json" />
     <link
       rel="apple-touch-icon"
-      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHR00IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTZDNCA2OS40OSA2OS40 OSA0OCA5NiA0OEg5NkMx INDIANA1MjI.144LD 96H66C40.46 144 16 123.54 16 98V96Z"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHR00IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTYDNCA2OS40OSA2OS40 OSA0OCA5NiA0OEg5NkMx INDIANA1MjI.144LD 96H66C40.46 144 16 123.54 16 98V96Z"
       fill="white"
     />
     <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
@@ -37,6 +37,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
       :root {
@@ -1168,6 +1169,12 @@
               class="px-4 py-2 rounded-lg bg-green-500/20 border border-green-400/30 hover:bg-green-500/30 transition-all duration-200 touch-feedback"
             >
               <i class="fa-solid fa-download mr-2"></i>Download ZIP
+            </button>
+            <button
+              id="downloadAllImagesBtn"
+              class="px-4 py-2 rounded-lg bg-blue-500/20 border border-blue-400/30 hover:bg-blue-500/30 transition-all duration-200 touch-feedback"
+            >
+              <i class="fa-solid fa-images mr-2"></i>Download All Images
             </button>
             <button
               id="clearBulkQrBtn"
@@ -3420,6 +3427,85 @@
         }, 100);
       };
 
+      const downloadAllImages = async () => {
+        if (bulkQrInstances.length === 0) {
+          notify("Belum ada QR Code yang digenerate", "error");
+          return;
+        }
+
+        if (typeof JSZip === 'undefined') {
+          notify("Library JSZip belum dimuat, menggunakan download satu per satu...", "info");
+          // Fallback: download one by one
+          for (let i = 0; i < bulkQrInstances.length; i++) {
+            const instance = bulkQrInstances[i];
+            try {
+              const canvas = instance.canvas;
+              const permitCode = instance.permit.permit_code || "custom";
+              const plateNo = instance.permit.plate || "NOPLATE";
+              const url = canvas.toDataURL("image/png");
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `${String(i + 1).padStart(3, '0')}-${permitCode}-${plateNo.replace(/\s/g, '')}.png`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              // Small delay between downloads
+              await new Promise(resolve => setTimeout(resolve, 200));
+            } catch (e) {
+              console.error("Error downloading:", instance.permit.permit_code, e);
+            }
+          }
+          notify(`${bulkQrInstances.length} QR Code berhasil diunduh satu per satu`, "success");
+          return;
+        }
+
+        try {
+          notify("Membuat ZIP file...", "info");
+          const zip = new JSZip();
+          const folder = zip.folder("qr_codes");
+
+          for (let i = 0; i < bulkQrInstances.length; i++) {
+            const instance = bulkQrInstances[i];
+            try {
+              const canvas = instance.canvas;
+              const permitCode = instance.permit.permit_code || "custom";
+              const plateNo = instance.permit.plate || "NOPLATE";
+              const dataUrl = canvas.toDataURL("image/png");
+              
+              // Convert data URL to blob
+              const response = await fetch(dataUrl);
+              const blob = await response.blob();
+              
+              const fileName = `${String(i + 1).padStart(3, '0')}-${permitCode}-${plateNo.replace(/\s/g, '')}.png`;
+              folder.file(fileName, blob);
+            } catch (e) {
+              console.error("Error adding to zip:", instance.permit.permit_code, e);
+            }
+          }
+
+          notify("Generating ZIP file...", "info");
+          const content = await zip.generateAsync({ 
+            type: "blob",
+            compression: "DEFLATE",
+            compressionOptions: { level: 6 }
+          });
+          
+          const url = URL.createObjectURL(content);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `qr_codes_${new Date().toISOString().slice(0,10)}_${Date.now()}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          
+          notify(`ZIP berisi ${bulkQrInstances.length} QR Code berhasil diunduh`, "success");
+        } catch (e) {
+          notify("Gagal membuat ZIP: " + e.message, "error");
+          console.error('Zip generation error:', e);
+        }
+      };
+
       const clearBulkQR = () => {
         $("#bulkQrContainer").innerHTML = "";
         $("#bulkQrCount").textContent = "0 QR Code di-generate";
@@ -3433,6 +3519,8 @@
       $("#qrPermitSelect")?.addEventListener("change", handlePermitSelection);
       $("#generateBulkQrBtn")?.addEventListener("click", generateBulkQR);
       $("#printAllQrBtn")?.addEventListener("click", printAllQR);
+      $("#downloadAllQrBtn")?.addEventListener("click", downloadAllImages);
+      $("#downloadAllImagesBtn")?.addEventListener("click", downloadAllImages);
       $("#clearBulkQrBtn")?.addEventListener("click", clearBulkQR);
 
       // Bulk barcodes
