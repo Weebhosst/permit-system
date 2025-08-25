@@ -16,7 +16,7 @@
     <link rel="manifest" href="manifest.json" />
     <link
       rel="apple-touch-icon"
-      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHR00IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTZDNCA2OS40OSA2OS40OSA0OCA5NiA0OEg5NkMxMjIuNTEgNDggMTQ0IDY5LjQ5IDE0NCA5NlY5NkMx INDIANA1MjI.144LD 96H66C40.46 144 16 123.54 16 98V96Z"
+      href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHR00IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzBlYTVlOSIvPgo8cGF0aCBkPSJNNDggOTZDNCA2OS40OSA2OS40 OSA0OCA5NiA0OEg5NkMx INDIANA1MjI.144LD 96H66C40.46 144 16 123.54 16 98V96Z"
       fill="white"
     />
     <title>Sistem Permit Kendaraan - Barcode + Scanner + Spreadsheet/SQL</title>
@@ -2023,7 +2023,7 @@
           });
           body.appendChild(tr);
         }
-        
+
         // Update QR permit select dropdown
         populatePermitSelect();
       };
@@ -2207,9 +2207,22 @@
             "video",
             (result, err) => {
               if (result) {
-                const text = result.getText();
-                $("#scanCode").textContent = text;
-                const match = permits.find((p) => p.permit_code === text);
+                let text = result.getText();
+                let permitCode = text;
+
+                // Jika hasil scan adalah JSON, extract hanya permit_code
+                try {
+                  const parsed = JSON.parse(text);
+                  if (parsed.permit_code) {
+                    permitCode = parsed.permit_code;
+                  }
+                } catch (e) {
+                  // Jika bukan JSON, gunakan text langsung sebagai permit code
+                  permitCode = text;
+                }
+
+                $("#scanCode").textContent = permitCode;
+                const match = permits.find((p) => p.permit_code === permitCode);
                 if (match) {
                   $("#scanMatch").innerHTML = `
                   <div class="print-card bg-white text-slate-900" style="zoom:.9">
@@ -2255,7 +2268,7 @@
                     const logObj = {
                       ts: nowISO(),
                       event: "SCAN",
-                      permit_code: match.permit_code,
+                      permit_code: permitCode,
                       plate: match.plate || "",
                     };
                     logsData.push(logObj);
@@ -2934,11 +2947,24 @@
       }
 
       function handleBarcodeScan(barcodeData) {
-        // Update scan code display
-        $("#scanCode").textContent = barcodeData;
+        let permitCode = barcodeData;
+
+        // Jika hasil scan adalah JSON, extract hanya permit_code
+        try {
+          const parsed = JSON.parse(barcodeData);
+          if (parsed.permit_code) {
+            permitCode = parsed.permit_code;
+          }
+        } catch (e) {
+          // Jika bukan JSON, gunakan data langsung sebagai permit code
+          permitCode = barcodeData;
+        }
+
+        // Update scan code display - hanya tampilkan permit code
+        $("#scanCode").textContent = permitCode;
 
         // Find matching permit
-        const match = permits.find((p) => p.permit_code === barcodeData);
+        const match = permits.find((p) => p.permit_code === permitCode);
 
         if (match) {
           // Show permit details
@@ -2976,16 +3002,26 @@
 
           // Auto-log if enabled
           if (document.getElementById("autoLogToggle")?.checked) {
-            addLog("SCAN", match.permit_code, match.plate, "Hardware Scanner");
+            const logObj = {
+              ts: nowISO(),
+              event: "SCAN",
+              permit_code: permitCode,
+              plate: match.plate || "",
+            };
+            logsData.push(logObj);
+            persist();
+            renderLogs();
+            renderStats();
+            sbInsertLog(logObj);
           }
 
-          notify(`Barcode berhasil di-scan: ${match.permit_code}`, "success");
+          notify(`Barcode berhasil di-scan: ${permitCode}`, "success");
         } else {
           // No match found
           $("#scanMatch").innerHTML =
             '<div class="rounded-lg border border-rose-400/30 bg-rose-500/10 p-3 text-sm text-rose-200">Tidak cocok data</div>';
           playBeep(800, 0.2); // Error sound
-          notify(`Barcode tidak ditemukan: ${barcodeData}`, "error");
+          notify(`Barcode tidak ditemukan: ${permitCode}`, "error");
         }
       }
 
@@ -3092,7 +3128,7 @@
       const populatePermitSelect = () => {
         const select = $("#qrPermitSelect");
         if (!select) return;
-        
+
         select.innerHTML = '<option value="">-- Pilih Permit --</option>';
         permits.forEach(permit => {
           const option = document.createElement('option');
@@ -3108,31 +3144,21 @@
         const permitCode = select.value;
         const ownerEl = $("#qrOwnerName");
         const codeEl = $("#qrPermitCode");
-        
+
         if (!permitCode) {
           ownerEl.textContent = "Belum ada data";
           codeEl.textContent = "Pilih permit untuk generate";
           $("#qrCodeText").value = "";
           return;
         }
-        
+
         const permit = permits.find(p => p.permit_code === permitCode);
         if (permit) {
           ownerEl.textContent = `🚗 ${permit.owner || 'Nama tidak tersedia'} - ${permit.plate}`;
           codeEl.textContent = `📋 ${permit.permit_code} (${permit.type || 'Kendaraan'})`;
-          
-          // Auto-fill QR data with permit info
-          const qrData = {
-            permit_code: permit.permit_code,
-            plate: permit.plate,
-            owner: permit.owner,
-            type: permit.type,
-            valid_from: permit.valid_from || permit.stnk_exp,
-            valid_to: permit.valid_to || permit.sima_exp,
-            status: permit.status,
-            generated_at: nowISO()
-          };
-          $("#qrCodeText").value = JSON.stringify(qrData, null, 2);
+
+          // Hanya tampilkan permit_code di teks kustom
+          $("#qrCodeText").value = permit.permit_code;
         }
       };
 
@@ -3147,22 +3173,13 @@
         const msgEl = $("#qrCodeMsg");
 
         let finalText = text;
-        
-        // QR Code tetap berisi data lengkap (berbeda dengan barcode yang hanya permit code)
+
+        // QR Code hanya berisi permit_code saja (sama seperti barcode)
         if (!finalText && permitCode) {
           const permit = permits.find(p => p.permit_code === permitCode);
           if (permit) {
-            const qrData = {
-              permit_code: permit.permit_code,
-              plate: permit.plate,
-              owner: permit.owner,
-              type: permit.type,
-              valid_from: permit.valid_from || permit.stnk_exp,
-              valid_to: permit.valid_to || permit.sima_exp,
-              status: permit.status,
-              generated_at: nowISO()
-            };
-            finalText = JSON.stringify(qrData);
+            $("#qrCodeText").value = permit.permit_code; // Update textarea dengan permit_code saja
+            finalText = permit.permit_code;
           }
         }
 
@@ -3175,31 +3192,31 @@
         try {
           // Clear previous content
           canvas.innerHTML = "";
-          
+
           // Show loading animation
           canvas.innerHTML = '<div class="flex items-center justify-center p-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div></div>';
-          
+
           setTimeout(() => {
             // Create QR code using qrcode-generator library
             const qr = qrcode(0, errorLevel);
             qr.addData(finalText);
             qr.make();
-            
+
             // Create actual canvas element for proper rendering
             const actualCanvas = document.createElement('canvas');
             actualCanvas.width = size;
             actualCanvas.height = size;
             const ctx = actualCanvas.getContext('2d');
-            
+
             // Set background color
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, size, size);
-            
+
             // Get QR code data and draw it
             const modules = qr.getModuleCount();
             const cellSize = Math.floor(size / modules);
             const offset = Math.floor((size - cellSize * modules) / 2);
-            
+
             ctx.fillStyle = color;
             for (let row = 0; row < modules; row++) {
               for (let col = 0; col < modules; col++) {
@@ -3213,24 +3230,24 @@
                 }
               }
             }
-            
+
             // Clear loading and add canvas
             canvas.innerHTML = "";
             actualCanvas.style.maxWidth = '100%';
             actualCanvas.style.height = 'auto';
             actualCanvas.className = 'rounded-lg shadow-lg';
             canvas.appendChild(actualCanvas);
-            
+
             msgEl.textContent = "✅ QR Code berhasil dibuat dengan tampilan premium!";
             msgEl.style.color = "#10b981";
-            
+
             // Store canvas for download
             qrCodeInstance = actualCanvas;
-            
+
             // Success sound
             playBeep(1200, 0.1);
           }, 500);
-          
+
         } catch (e) {
           msgEl.textContent = "❌ Gagal membuat QR Code: " + e.message;
           msgEl.style.color = "#ef4444";
@@ -3243,7 +3260,7 @@
           notify("QR Code belum dibuat. Generate QR Code terlebih dahulu", "error");
           return;
         }
-        
+
         try {
           const permitCode = $("#qrPermitSelect").value || "custom";
           const timestamp = new Date().toISOString().slice(0,10);
@@ -3268,7 +3285,7 @@
         const columns = parseInt($("#bulkQrColumns").value || "3");
         const container = $("#bulkQrContainer");
         const countEl = $("#bulkQrCount");
-        
+
         // Filter permits
         let filteredPermits = permits;
         if (statusFilter) {
@@ -3278,16 +3295,16 @@
             filteredPermits = permits.filter(p => (p.status || "active") === statusFilter && !isExpired(p));
           }
         }
-        
+
         if (filteredPermits.length === 0) {
           notify("Tidak ada permit yang sesuai filter", "error");
           return;
         }
-        
+
         // Clear previous results
         container.innerHTML = "";
         bulkQrInstances = [];
-        
+
         // Show loading
         container.innerHTML = `
           <div class="col-span-full flex items-center justify-center p-8">
@@ -3297,46 +3314,38 @@
             </div>
           </div>
         `;
-        
+
         // Set grid columns
         container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-        
+
         setTimeout(() => {
           container.innerHTML = "";
-          
+
           filteredPermits.forEach((permit, index) => {
             try {
-              const qrData = {
-                permit_code: permit.permit_code,
-                plate: permit.plate,
-                owner: permit.owner,
-                type: permit.type,
-                valid_from: permit.valid_from || permit.stnk_exp,
-                valid_to: permit.valid_to || permit.sima_exp,
-                status: permit.status,
-                generated_at: nowISO()
-              };
-              
+              // QR Code hanya berisi permit_code saja
+              const qrData = permit.permit_code;
+
               // Create QR code
               const qr = qrcode(0, 'M');
-              qr.addData(JSON.stringify(qrData));
+              qr.addData(qrData);
               qr.make();
-              
+
               // Create canvas
               const canvas = document.createElement('canvas');
               canvas.width = size;
               canvas.height = size;
               const ctx = canvas.getContext('2d');
-              
+
               // White background
               ctx.fillStyle = '#ffffff';
               ctx.fillRect(0, 0, size, size);
-              
+
               // Draw QR code
               const modules = qr.getModuleCount();
               const cellSize = Math.floor(size / modules);
               const offset = Math.floor((size - cellSize * modules) / 2);
-              
+
               ctx.fillStyle = '#000000';
               for (let row = 0; row < modules; row++) {
                 for (let col = 0; col < modules; col++) {
@@ -3350,7 +3359,7 @@
                   }
                 }
               }
-              
+
               // Create card element
               const card = document.createElement('div');
               card.className = 'bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-xl p-4 border-2 border-slate-300 shadow-lg';
@@ -3364,8 +3373,8 @@
                     <p class="text-xs text-slate-600">📋 ${permit.permit_code}</p>
                     <p class="text-xs text-slate-600">🚙 ${permit.plate} (${permit.type || 'Kendaraan'})</p>
                     <span class="inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      isExpired(permit) ? 'bg-red-100 text-red-800' : 
-                      permit.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                      isExpired(permit) ? 'bg-red-100 text-red-800' :
+                      permit.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-green-100 text-green-800'
                     }">
                       ${isExpired(permit) ? '❌ Expired' : permit.status === 'pending' ? '⏳ Pending' : '✅ Active'}
@@ -3373,22 +3382,22 @@
                   </div>
                 </div>
               `;
-              
+
               // Add canvas to card
               const cardCanvas = card.querySelector('canvas');
               cardCanvas.width = canvas.width;
               cardCanvas.height = canvas.height;
               const cardCtx = cardCanvas.getContext('2d');
               cardCtx.drawImage(canvas, 0, 0);
-              
+
               container.appendChild(card);
               bulkQrInstances.push({permit, canvas});
-              
+
             } catch (e) {
               console.error('Error generating QR for permit:', permit.permit_code, e);
             }
           });
-          
+
           countEl.textContent = `${bulkQrInstances.length} QR Code berhasil di-generate`;
           notify(`Successfully generated ${bulkQrInstances.length} QR Codes`, "success");
           playBeep(1000, 0.1);
@@ -3400,7 +3409,7 @@
           notify("Belum ada QR Code untuk di-print", "error");
           return;
         }
-        
+
         const printArea = $("#print-area");
         printArea.classList.remove("hidden");
         printArea.innerHTML = $("#bulkQrContainer").outerHTML;
