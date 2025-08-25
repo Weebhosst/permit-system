@@ -1,6 +1,7 @@
 {
-  "name": "Sistem Permit Kendaraan",
+  "name": "Sistem Permit Kendaraan - Barcode Scanner",
   "short_name": "Permit System",
+  "version": "2.0.0",
   "description": "Sistem manajemen permit kendaraan dengan scan barcode",
   "start_url": "/",
   "display": "standalone",
