@@ -536,12 +536,12 @@
             </div>
           </div>
           <div class="card p-5 rounded-xl">
-            <h3 class="font-semibold mb-3">Barcode</h3>
+            <h3 class="font-semibold mb-3">Barcode (Permit Code Only)</h3>
             <div class="flex items-center gap-3 mb-3">
               <input
                 id="barcodeText"
                 type="text"
-                placeholder="Masukkan teks/kode untuk barcode"
+                placeholder="Masukkan permit code untuk barcode"
                 class="flex-1 px-3 py-2 rounded-lg bg-slate-800/60 border border-slate-700"
               />
               <button
@@ -578,7 +578,7 @@
           <div class="grid md:grid-cols-3 gap-4">
             <div class="md:col-span-2">
               <label class="text-sm text-slate-300"
-                >Daftar Kode (satu per baris)</label
+                >Daftar Permit Code (satu per baris)</label
               >
               <textarea
                 id="bulkCodes"
@@ -2236,6 +2236,7 @@
                     <div class="flex items-center justify-center"><svg id="scan_barcode_preview"></svg></div>
                   </div>`;
                   try {
+                    // Barcode preview hanya menampilkan permit code
                     JsBarcode(
                       document.getElementById("scan_barcode_preview"),
                       match.permit_code,
@@ -2316,9 +2317,10 @@
         if (sSTNK) sSTNK.textContent = stnk;
         if (sSIMC) sSIMC.textContent = simc;
         if (sSIMA) sSIMA.textContent = sima;
+        // Barcode hanya berisi permit code saja
         renderBarcodeTo(
           "#pp_barcode",
-          $("#f_permit_code").value || $("#f_plate").value || "",
+          $("#f_permit_code").value || "",
         );
       };
 
@@ -2358,6 +2360,7 @@
         $("#generateBarcodeBtn").addEventListener("click", () => {
           const txt = $("#barcodeText").value.trim();
           if (!txt) return notify("Isi teks/kode terlebih dahulu", "error");
+          // Hanya generate barcode dengan permit code saja
           renderBarcodeTo("#barcodeSvg", txt);
         });
         $("#downloadBarcodeBtn").addEventListener("click", () =>
@@ -2385,6 +2388,7 @@
             </div>
             <div class="hline"></div>
             <div class="flex items-center justify-center"><svg id="tmp_bar"></svg></div>`;
+          // Generate barcode hanya untuk permit code
           JsBarcode(card.querySelector("#tmp_bar"), code, {
             format: "CODE128",
             displayValue: true,
@@ -2961,9 +2965,10 @@
             </div>`;
 
           $("#scanMatch").innerHTML = cardHtml;
+          // Hardware scanner barcode hanya menampilkan permit code
           renderBarcodeTo(
             "#hardware_scan_barcode",
-            match.permit_code || match.plate || "",
+            match.permit_code || "",
           );
 
           // Play success sound
@@ -3143,7 +3148,7 @@
 
         let finalText = text;
         
-        // If permit selected but no custom text, use permit data
+        // QR Code tetap berisi data lengkap (berbeda dengan barcode yang hanya permit code)
         if (!finalText && permitCode) {
           const permit = permits.find(p => p.permit_code === permitCode);
           if (permit) {
